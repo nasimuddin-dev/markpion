@@ -1,8 +1,8 @@
-import { useDeferredValue, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { memo, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent as ReactPointerEvent } from "react";
 import { useDocuments } from "../stores/documentsStore";
 import { useUi } from "../stores/uiStore";
 import { useSettings } from "../stores/settingsStore";
-import { currentHeadingIndex, extractHeadings, headingSlugs, type Heading } from "../features/outline";
+import { currentHeadingIndex, headingSlugs, headingsOf, sameHeadings, type Heading } from "../features/outline";
 import { moveSectionAtLine, moveSectionTo, selectSection, setDocumentText } from "../features/sections";
 import { copyText } from "../features/pathActions";
 import { ContextMenu } from "./ContextMenu";
@@ -10,6 +10,7 @@ import { revealLine, runOnEditor } from "../features/editorBridge";
 import { renameHeading } from "../features/renameHeading";
 import { Icon } from "./Icon";
 import { mountAllChunks } from "./PreviewChunks";
+import { useFollowedText } from "./useFollowedText";
 
 /** Scrolls the preview to the n-th heading. */
 function revealInPreview(index: number) {
@@ -25,15 +26,82 @@ export function goToHeading(h: Heading, index: number) {
   if (viewMode !== "editor") revealInPreview(index);
 }
 
+const NO_HEADINGS: Heading[] = [];
+
+interface RowActions {
+  activate(index: number): void;
+  pointerDown(e: ReactPointerEvent<HTMLButtonElement>, index: number): void;
+  keyDown(e: KeyboardEvent<HTMLButtonElement>, index: number): void;
+  contextMenu(e: MouseEvent<HTMLButtonElement>, index: number): void;
+  toggle(index: number): void;
+}
+
+/** One heading in the outline. Memoized: a long document has thousands, and typing changes at most a few. */
+const OutlineRow = memo(function OutlineRow({ index, level, text, line, indent, current, expandable, closed, dragging, dropBefore, actions }: {
+  index: number;
+  level: number;
+  text: string;
+  line: number;
+  indent: number;
+  current: boolean;
+  expandable: boolean;
+  closed: boolean;
+  dragging: boolean;
+  dropBefore: boolean;
+  actions: RowActions;
+}) {
+  return (
+    <li>
+      <button
+        aria-expanded={expandable ? !closed : undefined}
+        data-outline-index={index}
+        className={`outline-item${current ? " current" : ""}${dragging ? " dragging" : ""}${dropBefore ? " drop-before" : ""}`}
+        style={{ paddingLeft: indent }}
+        aria-current={current ? "location" : undefined}
+        title={`${text} (line ${line}). Drag, or press Alt+Up/Down, to move the section`}
+        onClick={() => actions.activate(index)}
+        onPointerDown={(e) => actions.pointerDown(e, index)}
+        onKeyDown={(e) => actions.keyDown(e, index)}
+        onContextMenu={(e) => actions.contextMenu(e, index)}
+      >
+        {expandable ? (
+          <span
+            className="outline-toggle"
+            aria-hidden="true"
+            title={closed ? "Expand (Right arrow)" : "Collapse (Left arrow)"}
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              actions.toggle(index);
+            }}
+          >
+            <Icon name={closed ? "chevronRight" : "chevronDown"} size={12} />
+          </span>
+        ) : (
+          <span className="outline-toggle" aria-hidden="true" />
+        )}
+        <span className="outline-level" aria-hidden="true">H{level}</span>
+        <span className="outline-text">{text}</span>
+      </button>
+    </li>
+  );
+});
+
 /** Document outline: navigable list of headings for the active document. */
 export function Outline() {
   const docId = useDocuments((s) => s.activeId);
   const content = useDocuments((s) => s.docs.find((d) => d.id === s.activeId)?.content);
-  const deferred = useDeferredValue(content);
-  const headings = useMemo(() => (deferred ? extractHeadings(deferred) : []), [deferred]);
+  const deferred = useFollowedText(content, docId);
+  const collapsed = useSettings((s) => !s.settings.showOutline);
+  // Typing in a paragraph leaves the headings as they are: the list keeps the same array, so its rows don't render again.
+  const lastHeadings = useRef<Heading[]>(NO_HEADINGS);
+  const headings = useMemo(() => {
+    const next = deferred && !collapsed ? headingsOf(deferred) : NO_HEADINGS;
+    if (!sameHeadings(lastHeadings.current, next)) lastHeadings.current = next;
+    return lastHeadings.current;
+  }, [deferred, collapsed]);
   const cursorLine = useUi((s) => s.cursor.line);
   const current = currentHeadingIndex(headings, cursorLine);
-  const collapsed = useSettings((s) => !s.settings.showOutline);
   const update = useSettings((s) => s.update);
   const list = useRef<HTMLUListElement>(null);
   const minLevel = headings.reduce((m, h) => Math.min(m, h.level), 6);
@@ -95,7 +163,7 @@ export function Outline() {
     return r && y > r.bottom - 4 && x >= r.left && x <= r.right ? headings.length : null;
   };
 
-  const onPointerDown = (e: React.PointerEvent<HTMLButtonElement>, index: number) => {
+  const onPointerDown = (e: ReactPointerEvent<HTMLButtonElement>, index: number) => {
     if (e.button !== 0) return;
     drag.current = { index, y: e.clientY, active: false };
     const move = (ev: PointerEvent) => {
@@ -144,7 +212,50 @@ export function Outline() {
     list.current?.querySelector(".outline-item.current")?.scrollIntoView({ block: "nearest" });
   }, [current]);
 
-  const go = goToHeading;
+  // The rows get one set of handlers that never changes, so a row renders again only when its own heading does.
+  const latest = useRef({ headings, onPointerDown, onItemKey, toggle });
+  latest.current = { headings, onPointerDown, onItemKey, toggle };
+  const rowActions = useMemo<RowActions>(
+    () => ({
+      activate: (i) => {
+        if (suppressClick.current) suppressClick.current = false;
+        else goToHeading(latest.current.headings[i], i);
+      },
+      pointerDown: (e, i) => latest.current.onPointerDown(e, i),
+      keyDown: (e, i) => latest.current.onItemKey(e, i),
+      contextMenu: (e, i) => {
+        e.preventDefault();
+        setMenu({ x: e.clientX, y: e.clientY, index: i });
+      },
+      toggle: (i) => latest.current.toggle(i),
+    }),
+    [],
+  );
+
+  // Built only when something a row shows changes; typing in a paragraph changes none of it.
+  const rows = useMemo(
+    () =>
+      visible.map((i) => {
+        const h = headings[i];
+        return (
+          <OutlineRow
+            key={i}
+            index={i}
+            level={h.level}
+            text={h.text}
+            line={h.line}
+            indent={12 + (h.level - minLevel) * 14}
+            current={i === current}
+            expandable={(headings[i + 1]?.level ?? 0) > h.level}
+            closed={closed.has(slugs[i])}
+            dragging={dragging?.from === i}
+            dropBefore={!!dragging && dragging.drop === i && dragging.from !== i}
+            actions={rowActions}
+          />
+        );
+      }),
+    [visible, headings, slugs, closed, current, dragging, minLevel, rowActions],
+  );
 
   return (
     <section className={`sidebar-section outline${collapsed ? " collapsed" : ""}`} aria-label="Outline">
@@ -164,50 +275,7 @@ export function Outline() {
           <p className="sidebar-empty">No headings in this document.</p>
         ) : (
           <ul className={`outline-list${dragging?.drop === headings.length ? " drop-end" : ""}`} ref={list} role="list">
-            {visible.map((i) => {
-              const h = headings[i];
-              return (
-              <li key={`${h.line}-${i}`}>
-                <button
-                  aria-expanded={hasChildren(i) ? !closed.has(slugs[i]) : undefined}
-                  data-outline-index={i}
-                  className={`outline-item${i === current ? " current" : ""}${dragging?.from === i ? " dragging" : ""}${dragging && dragging.drop === i && dragging.from !== i ? " drop-before" : ""}`}
-                  style={{ paddingLeft: 12 + (h.level - minLevel) * 14 }}
-                  aria-current={i === current ? "location" : undefined}
-                  title={`${h.text} (line ${h.line}). Drag, or press Alt+Up/Down, to move the section`}
-                  onClick={() => {
-                    if (suppressClick.current) suppressClick.current = false;
-                    else go(h, i);
-                  }}
-                  onPointerDown={(e) => onPointerDown(e, i)}
-                  onKeyDown={(e) => onItemKey(e, i)}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    setMenu({ x: e.clientX, y: e.clientY, index: i });
-                  }}
-                >
-                  {hasChildren(i) ? (
-                    <span
-                      className="outline-toggle"
-                      aria-hidden="true"
-                      title={closed.has(slugs[i]) ? "Expand (Right arrow)" : "Collapse (Left arrow)"}
-                      onPointerDown={(e) => e.stopPropagation()}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggle(i);
-                      }}
-                    >
-                      <Icon name={closed.has(slugs[i]) ? "chevronRight" : "chevronDown"} size={12} />
-                    </span>
-                  ) : (
-                    <span className="outline-toggle" aria-hidden="true" />
-                  )}
-                  <span className="outline-level" aria-hidden="true">H{h.level}</span>
-                  <span className="outline-text">{h.text}</span>
-                </button>
-              </li>
-              );
-            })}
+            {rows}
           </ul>
         )
       )}

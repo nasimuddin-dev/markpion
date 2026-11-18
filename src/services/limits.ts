@@ -7,5 +7,12 @@
  */
 export const LARGE_DOCUMENT_CHARS = 1_000_000;
 
+/**
+ * Above this a document is "long": the views worked out from its whole text
+ * (the outline, the breadcrumbs, the word and task counts) catch up when
+ * typing pauses instead of on every keystroke (`useFollowedText`).
+ */
+export const LONG_DOCUMENT_CHARS = 50_000;
+
 /** Pictures the preview keeps decoded in memory (data URLs) before the oldest are dropped. */
 export const IMAGE_CACHE_BYTES = 96 * 1024 * 1024;

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import { commands, formatShortcut } from "../features/commands";
 import { getEditorView, runOnEditor } from "../features/editorBridge";
 import { insertTableOf } from "../features/formatting";
@@ -107,21 +107,28 @@ const MORE_WIDTH = 40;
 export function Toolbar() {
   const cursor = useUi((s) => s.cursor);
   const content = useDocuments((s) => s.docs.find((d) => d.id === s.activeId)?.content);
+  // Re-read the editor whenever the cursor or the text changes. Most keystrokes leave the formatting at the
+  // cursor as it was: the same object is kept then, so the controls below don't render again.
+  const last = useRef<{ format: FormatState; tableish: boolean } | null>(null);
+  const at = useMemo(() => {
+    const view = getEditorView();
+    const format = view ? formatStateAt(view.state) : NO_FORMAT;
+    // Table tools also for tables with mistakes (not parsed as tables) and multi-line selections, so Fix Table is at hand.
+    let tableish = false;
+    if (view) {
+      const { state } = view;
+      const sel = state.selection.main;
+      tableish = (!sel.empty && state.doc.lineAt(sel.from).number !== state.doc.lineAt(sel.to).number) || tableAround(state, state.doc.lineAt(sel.head).number) !== null;
+    }
+    const prev = last.current;
+    if (prev && prev.tableish === tableish && (Object.keys(format) as Array<keyof FormatState>).every((k) => prev.format[k] === format[k])) return prev;
+    return (last.current = { format, tableish });
+  }, [cursor, content]); // eslint-disable-line react-hooks/exhaustive-deps
+  return <ToolbarControls format={at.format} tableish={at.tableish} />;
+}
+
+const ToolbarControls = memo(function ToolbarControls({ format, tableish }: { format: FormatState; tableish: boolean }) {
   const aiEnabled = useSettings((s) => s.settings.aiEnabled);
-  // Re-read the editor whenever the cursor or the text changes.
-  const format = useMemo(() => {
-    const view = getEditorView();
-    return view ? formatStateAt(view.state) : NO_FORMAT;
-  }, [cursor, content]); // eslint-disable-line react-hooks/exhaustive-deps
-  // Table tools also for tables with mistakes (not parsed as tables) and multi-line selections, so Fix Table is at hand.
-  const tableish = useMemo(() => {
-    const view = getEditorView();
-    if (!view) return false;
-    const { state } = view;
-    const sel = state.selection.main;
-    if (!sel.empty && state.doc.lineAt(sel.from).number !== state.doc.lineAt(sel.to).number) return true;
-    return tableAround(state, state.doc.lineAt(sel.head).number) !== null;
-  }, [cursor, content]); // eslint-disable-line react-hooks/exhaustive-deps
   const bar = useRef<HTMLDivElement>(null);
   const [focusIndex, setFocusIndex] = useState(0);
   const [aiMenu, setAiMenu] = useState<{ x: number; y: number } | null>(null);
@@ -362,4 +369,4 @@ export function Toolbar() {
       )}
     </div>
   );
-}
+});

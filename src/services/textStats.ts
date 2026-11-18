@@ -1,9 +1,34 @@
 /** Lightweight text statistics (kept out of the Markdown pipeline bundle). */
 const WORD = /[\p{L}\p{N}][\p{L}\p{N}'’_-]*/gu;
 
+/** A letter or digit outside ASCII (accented letters, other scripts). */
+const LETTER_OR_DIGIT = /[\p{L}\p{N}]/u;
+
+/**
+ * Counts what WORD matches, in one pass over the characters: the status bar
+ * counts on every edit, and matching the pattern over a long document takes
+ * several times as long. A word starts at a letter or digit and goes on
+ * through letters, digits, apostrophes, underscores and hyphens.
+ */
 export function countWords(text: string): number {
-  const m = text.match(WORD);
-  return m ? m.length : 0;
+  let count = 0;
+  let inWord = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text.charCodeAt(i);
+    let wordChar: boolean;
+    if (c < 128) wordChar = (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c >= 48 && c <= 57);
+    else if (c >= 0xd800 && c <= 0xdbff && (text.charCodeAt(i + 1) & 0xfc00) === 0xdc00) {
+      // A character outside the basic plane takes two code units.
+      wordChar = LETTER_OR_DIGIT.test(text.slice(i, i + 2));
+      i++;
+    } else wordChar = LETTER_OR_DIGIT.test(text[i]);
+    if (wordChar) {
+      if (!inWord) count++;
+      inWord = true;
+      // ' ’ _ - continue a word, but don't start one.
+    } else if (!(inWord && (c === 39 || c === 0x2019 || c === 95 || c === 45))) inWord = false;
+  }
+  return count;
 }
 
 export interface TextStats {

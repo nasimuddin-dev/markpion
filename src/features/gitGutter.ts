@@ -4,7 +4,7 @@ import { EditorView, GutterMarker, gutter, showTooltip, type Tooltip } from "@co
 import { backend } from "../services";
 import { useDocuments } from "../stores/documentsStore";
 import { useSettings } from "../stores/settingsStore";
-import { diffLines } from "./diff";
+import { lineChanges } from "./diff";
 import { getEditorView } from "./editorBridge";
 import { create } from "zustand";
 
@@ -41,31 +41,43 @@ export interface Hunk {
   old: string[];
 }
 
-/** Keeps each comparison fast enough to run on every keystroke. */
-const MAX_CELLS = 1_000_000;
+/**
+ * Keeps each comparison fast enough to run on every keystroke: a small changed
+ * part is compared cell by cell; a larger one (edits far apart in a long
+ * document) as long as no more than this many lines differ.
+ */
+const MAX_CELLS = 60_000;
+const MAX_EDITS = 600;
 const MAX_DOCUMENT_CHARS = LARGE_DOCUMENT_CHARS;
+
+/** The changed regions between the committed lines and the current ones, or null when they differ too much to compare quickly. */
+export function changeHunksOfLines(base: string[], current: string[]): Hunk[] | null {
+  const changes = lineChanges(base, current, MAX_CELLS, MAX_EDITS);
+  if (!changes) return null;
+  const hunks: Hunk[] = [];
+  let oldAt = changes.start;
+  let newAt = changes.start;
+  let hunk: Hunk | null = null;
+  for (const step of changes.steps) {
+    if (step === 0) {
+      hunk = null;
+      oldAt++;
+      newAt++;
+      continue;
+    }
+    if (!hunk) hunks.push((hunk = { start: newAt + 1, count: 0, old: [] }));
+    if (step === 1) hunk.old.push(base[oldAt++]);
+    else {
+      hunk.count++;
+      newAt++;
+    }
+  }
+  return hunks;
+}
 
 /** The changed regions between the committed text and the current one, or null when they differ too much to compare quickly. */
 export function changeHunks(base: string, current: string): Hunk[] | null {
-  const lines = diffLines(base, current, MAX_CELLS);
-  if (!lines) return null;
-  const hunks: Hunk[] = [];
-  let nextNew = 1;
-  for (let i = 0; i < lines.length; ) {
-    if (lines[i].kind === "same") {
-      nextNew = lines[i].newNo! + 1;
-      i++;
-      continue;
-    }
-    const hunk: Hunk = { start: nextNew, count: 0, old: [] };
-    for (; i < lines.length && lines[i].kind !== "same"; i++) {
-      if (lines[i].kind === "del") hunk.old.push(lines[i].text);
-      else hunk.count++;
-    }
-    nextNew += hunk.count;
-    hunks.push(hunk);
-  }
-  return hunks;
+  return changeHunksOfLines(base.split("\n"), current.split("\n"));
 }
 
 /**
@@ -133,11 +145,15 @@ interface Changes {
   markers: RangeSet<GutterMarker>;
 }
 
+let baseLines: { text: string; lines: string[] } | null = null;
+
 function compare(state: EditorState): Changes {
   const base = state.field(baseField);
   // Very large documents (as for the live preview) aren't compared, to keep typing fast.
   if (base === null || state.doc.length > MAX_DOCUMENT_CHARS) return { hunks: [], markers: RangeSet.empty };
-  const hunks = changeHunks(base, state.doc.toString()) ?? [];
+  // The committed text's lines are kept between edits; the editor already holds the document as lines.
+  if (baseLines?.text !== base) baseLines = { text: base, lines: base.split("\n") };
+  const hunks = changeHunksOfLines(baseLines.lines, state.doc.toJSON()) ?? [];
   const ranges = [...hunkMarkers(hunks, state.doc.lines)]
     .filter(([line]) => line <= state.doc.lines)
     .sort((a, b) => a[0] - b[0])

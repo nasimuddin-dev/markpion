@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { currentHeadingIndex, extractHeadings, headingSlugs, plainHeadingText } from "../src/features/outline";
+import { currentHeadingIndex, extractHeadings, headingSlugs, headingsOf, plainHeadingText, sameHeadings } from "../src/features/outline";
 import { useDocuments } from "../src/stores/documentsStore";
 import { Outline } from "../src/components/Outline";
 import { newDocument } from "../src/features/documents";
@@ -52,6 +52,20 @@ describe("extractHeadings", () => {
     expect(currentHeadingIndex(h, 6)).toBe(0);
     expect(currentHeadingIndex(h, 12)).toBe(1);
     expect(currentHeadingIndex(h, 99)).toBe(4);
+  });
+
+  it("keeps the last result, and tells when an edit left the headings as they were", () => {
+    const first = headingsOf(DOC);
+    expect(first).toEqual(extractHeadings(DOC));
+    // The outline and the breadcrumbs ask for the same text: one scan.
+    expect(headingsOf(DOC)).toBe(first);
+    // Typing at the end of the last line changes no heading…
+    expect(sameHeadings(first, headingsOf(`${DOC} more`))).toBe(true);
+    // …a new line above them moves them down, and a retitled or re-levelled heading differs too.
+    expect(sameHeadings(first, headingsOf(`---\nextra: 1\n${DOC.slice(4)}`))).toBe(false);
+    expect(sameHeadings(first, headingsOf(DOC.replace("# Title", "# Other")))).toBe(false);
+    expect(sameHeadings(first, headingsOf(DOC.replace("# Title", "## Title")))).toBe(false);
+    expect(sameHeadings(first, first.slice(1))).toBe(false);
   });
 });
 

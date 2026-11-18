@@ -134,10 +134,21 @@ function ProgressDialog({ title, message, fraction }: { title: string; message: 
 export function Toasts() {
   const toasts = useUi((s) => s.toasts);
   const dismiss = useUi((s) => s.dismissToast);
+  const hold = useUi((s) => s.holdToast);
+  const release = useUi((s) => s.releaseToast);
   return (
     <div className="toasts" aria-live="polite">
       {toasts.map((t) => (
-        <div key={t.id} className={`toast ${t.kind}`} role={t.kind === "error" ? "alert" : "status"}>
+        // A notification stays while the pointer is over it or one of its buttons has the focus.
+        <div
+          key={t.id}
+          className={`toast ${t.kind}`}
+          role={t.kind === "error" ? "alert" : "status"}
+          onMouseEnter={() => hold(t.id)}
+          onMouseLeave={() => release(t.id)}
+          onFocus={() => hold(t.id)}
+          onBlur={() => release(t.id)}
+        >
           <span>{t.message}</span>
           {t.kind === "error" && (
             <button className="link-button toast-action" onClick={() => {

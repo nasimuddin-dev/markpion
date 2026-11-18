@@ -1,11 +1,12 @@
-import { useDeferredValue, useMemo, useState, type MouseEvent } from "react";
-import { extractHeadings } from "../features/outline";
+import { useMemo, useState, type MouseEvent } from "react";
+import { headingsOf } from "../features/outline";
 import { headingParents, headingPath, siblingHeadings } from "../features/breadcrumbs";
 import { useDocuments } from "../stores/documentsStore";
 import { useUi } from "../stores/uiStore";
 import { ContextMenu, type MenuEntry } from "./ContextMenu";
 import { goToHeading } from "./Outline";
 import { Icon } from "./Icon";
+import { useFollowedText } from "./useFollowedText";
 
 /**
  * Where the cursor is in the document's headings, above the editor:
@@ -14,11 +15,12 @@ import { Icon } from "./Icon";
  */
 export function Breadcrumbs() {
   const name = useDocuments((s) => s.docs.find((d) => d.id === s.activeId)?.name ?? "");
+  const docId = useDocuments((s) => s.activeId);
   const content = useDocuments((s) => s.docs.find((d) => d.id === s.activeId)?.content ?? "");
-  const deferred = useDeferredValue(content);
+  const deferred = useFollowedText(content, docId) ?? "";
   const cursorLine = useUi((s) => s.cursor.line);
   // From the text at a lower priority than typing, like the outline.
-  const headings = useMemo(() => extractHeadings(deferred), [deferred]);
+  const headings = useMemo(() => headingsOf(deferred), [deferred]);
   const parents = useMemo(() => headingParents(headings), [headings]);
   const path = headingPath(headings, parents, cursorLine);
   const [menu, setMenu] = useState<{ x: number; y: number; of: number } | null>(null);

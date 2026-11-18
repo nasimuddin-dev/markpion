@@ -4,14 +4,37 @@
     {
       "name": "web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 1420
     },
     {
       "name": "website",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "website", "run", "preview", "--", "--port", "4173"],
+      "runtimeArgs": [
+        "--prefix",
+        "website",
+        "run",
+        "preview",
+        "--",
+        "--port",
+        "4173"
+      ],
       "port": 4173
+    },
+    {
+      "name": "web-built",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "vite",
+        "preview",
+        "--port",
+        "4174",
+        "--strictPort"
+      ],
+      "port": 4174
     }
   ]
 }

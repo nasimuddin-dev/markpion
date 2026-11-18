@@ -91,6 +91,9 @@ interface UiState {
   focusSearch(): void;
   closeDialog(id: number, result: { button: string; value?: string }): void;
   notify(kind: Toast["kind"], message: string): void;
+  /** Keeps a notification on screen (the pointer or the keyboard focus is on it) until `releaseToast`. */
+  holdToast(id: number): void;
+  releaseToast(id: number): void;
   dismissToast(id: number): void;
 }
 
@@ -151,14 +154,48 @@ export const useUi = create<UiState>((set, get) => ({
     d?.resolve(result);
   },
   notify(kind, message) {
+    // The same message again (a command run twice) shows once, for its full time again.
+    const shown = get().toasts.find((t) => t.kind === kind && t.message === message);
+    if (shown) {
+      startToastTimer(shown.id, toastDuration(kind, message));
+      return;
+    }
     const id = nextId++;
     set({ toasts: [...get().toasts, { id, kind, message }] });
-    setTimeout(() => get().dismissToast(id), kind === "error" ? 9000 : 4000);
+    startToastTimer(id, toastDuration(kind, message));
   },
   dismissToast(id) {
+    clearTimeout(toastTimers.get(id));
+    toastTimers.delete(id);
     set({ toasts: get().toasts.filter((t) => t.id !== id) });
   },
+  holdToast(id) {
+    clearTimeout(toastTimers.get(id));
+    toastTimers.delete(id);
+  },
+  releaseToast(id) {
+    if (get().toasts.some((t) => t.id === id)) startToastTimer(id, TOAST_AFTER_HOLD_MS);
+  },
 }));
+
+const toastTimers = new Map<number, ReturnType<typeof setTimeout>>();
+/** How long a notification stays once the pointer or the focus has left it. */
+const TOAST_AFTER_HOLD_MS = 2500;
+
+function startToastTimer(id: number, ms: number) {
+  clearTimeout(toastTimers.get(id));
+  toastTimers.set(id, setTimeout(() => useUi.getState().dismissToast(id), ms));
+}
+
+/**
+ * How long a notification stays: long enough to read it (about 70 ms a
+ * character, on top of the time to notice it), at least 4 seconds, or 9 for an
+ * error (it also offers Report…), and at most 20.
+ */
+export function toastDuration(kind: Toast["kind"], message: string): number {
+  const reading = 2000 + message.length * 70;
+  return Math.min(20_000, Math.max(kind === "error" ? 9000 : 4000, reading));
+}
 
 /** Shows a modal dialog and resolves with the id of the chosen button. */
 export function ask<T extends string>(opts: {

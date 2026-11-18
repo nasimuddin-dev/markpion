@@ -116,7 +116,7 @@ Above the commit message:
 - **↓ Pull** brings in the commits on the branch's upstream (the number shows how many). It only pulls when no merge is needed; when both sides have new commits, Markpion says so and leaves merging or rebasing to your Git tool.
 - **↑ Push** sends your commits (the number shows how many). The first push of a new branch sets its upstream on the repository's remote.
 
-Pull and push use your Git credentials as on the command line (for example Git Credential Manager on Windows, which may show its own sign-in window). They stop after two minutes without an answer.
+Pull and push use your Git credentials as on the command line (for example Git Credential Manager on Windows, which may show its own sign-in window). While one runs, the tab says so ("Pulling from origin/main…") and its buttons are off. They stop after two minutes without an answer.
 
 ### Requirements and privacy
 

@@ -149,7 +149,7 @@ export function HistoryDialog() {
             {text === null ? (
               <p className="muted">Loading…</p>
             ) : diff === null ? (
-              <p className="muted">This document is too large to compare. You can still restore the version.</p>
+              <p className="muted">This version differs too much from the document to compare line by line. You can still restore it.</p>
             ) : stats && stats.added + stats.removed === 0 ? (
               <p className="muted">Identical to the current text.</p>
             ) : (

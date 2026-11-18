@@ -78,6 +78,7 @@ Administrators can preset and lock these settings for everyone on a computer; se
 | --- | --- |
 | Largest document that can be opened | 50 MB |
 | Live preview pauses above | 1 MB of text |
+| Outline, breadcrumbs and word count update when typing pauses, above | 50,000 characters |
 | Largest image that can be added or previewed | 20 MB |
 | Largest file that can be imported | 100 MB |
 | File history | 30 versions per file |

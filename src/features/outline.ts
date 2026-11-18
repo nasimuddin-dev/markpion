@@ -60,6 +60,28 @@ export function extractHeadings(text: string): Heading[] {
   return headings;
 }
 
+let lastExtract: { text: string; headings: Heading[] } | null = null;
+
+/**
+ * `extractHeadings` for the views that follow the open document (outline,
+ * breadcrumbs): they ask for the same text one after the other, so the last
+ * result is kept. Don't change the returned array.
+ */
+export function headingsOf(text: string): Heading[] {
+  if (lastExtract?.text !== text) lastExtract = { text, headings: extractHeadings(text) };
+  return lastExtract.headings;
+}
+
+/** Whether two heading lists show the same headings on the same lines. */
+export function sameHeadings(a: Heading[], b: Heading[]): boolean {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i].line !== b[i].line || a[i].level !== b[i].level || a[i].text !== b[i].text) return false;
+  }
+  return true;
+}
+
 /** Index of the heading that contains `line` (the last heading at or above it), or -1. */
 export function currentHeadingIndex(headings: Heading[], line: number): number {
   let idx = -1;

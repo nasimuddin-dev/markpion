@@ -17,6 +17,8 @@ export function SourceControlPanel() {
   const [result, setResult] = useState<ChangesResult | null>(null);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  /** What a slow action (pull, push) is doing, shown while it runs. */
+  const [working, setWorking] = useState<string | null>(null);
   const [branches, setBranches] = useState<GitBranches | null>(null);
   const [branchMenu, setBranchMenu] = useState<{ x: number; y: number } | null>(null);
   const run = useRef(0);
@@ -41,14 +43,16 @@ export function SourceControlPanel() {
     return () => window.removeEventListener("focus", onFocus);
   }, [load]);
 
-  const doAndReload = async (work: () => Promise<boolean>) => {
+  const doAndReload = async (work: () => Promise<boolean>, doing: string | null = null) => {
     setBusy(true);
+    setWorking(doing);
     try {
       const ok = await work();
       await load();
       return ok;
     } finally {
       setBusy(false);
+      setWorking(null);
     }
   };
 
@@ -130,7 +134,7 @@ export function SourceControlPanel() {
             disabled={busy || !branches.upstream}
             title={branches.upstream ? `Pull from ${branches.upstream}` : "This branch has no upstream to pull from"}
             aria-label={`Pull${branches.behind ? `, ${branches.behind} to pull` : ""}`}
-            onClick={() => void doAndReload(pull)}
+            onClick={() => void doAndReload(pull, `Pulling from ${branches.upstream}…`)}
           >
             <Icon name="arrowDown" size={14} />
             {branches.behind > 0 && <span>{branches.behind}</span>}
@@ -140,13 +144,15 @@ export function SourceControlPanel() {
             disabled={busy || !branches.hasRemote}
             title={branches.hasRemote ? (branches.upstream ? `Push to ${branches.upstream}` : "Push (and set the upstream)") : "This repository has no remote to push to"}
             aria-label={`Push${branches.ahead ? `, ${branches.ahead} to push` : ""}`}
-            onClick={() => void doAndReload(push)}
+            onClick={() => void doAndReload(push, branches.upstream ? `Pushing to ${branches.upstream}…` : "Pushing…")}
           >
             <Icon name="arrowUp" size={14} />
             {branches.ahead > 0 && <span>{branches.ahead}</span>}
           </button>
         </div>
       )}
+      {/* Pull and push wait on the network (and maybe a sign-in window): say so while they run. */}
+      <p className="scm-working" role="status">{working}</p>
       {branchMenu && branches && (
         <ContextMenu
           x={branchMenu.x}

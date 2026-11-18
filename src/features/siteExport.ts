@@ -5,8 +5,9 @@ import { buildHtmlDocument, documentTitle } from "../services/exportHtml";
 import { basename, isInside, join, relativePath } from "../services/paths";
 import { useDocuments } from "../stores/documentsStore";
 import { useSettings } from "../stores/settingsStore";
-import { ask, notify } from "../stores/uiStore";
+import { ask, notify, useUi } from "../stores/uiStore";
 import { useWorkspace } from "../stores/workspaceStore";
+import type { PublishResult } from "../types";
 import { combineOrder } from "./combine";
 
 /**
@@ -92,8 +93,11 @@ export interface BuiltSite {
   pageCount: number;
 }
 
-/** Builds the folder's pages as HTML (unsaved edits in open tabs included, as shown in the editor). */
-export async function buildSite(root: string, pages: SitePage[]): Promise<BuiltSite> {
+/**
+ * Builds the folder's pages as HTML (unsaved edits in open tabs included, as shown in the editor).
+ * `onPage` is told before each page is built: how many are done, of how many.
+ */
+export async function buildSite(root: string, pages: SitePage[], onPage?: (done: number, total: number) => void): Promise<BuiltSite> {
   const s = useSettings.getState().settings;
   const features = { math: s.renderMath, diagrams: s.renderDiagrams };
   const css = scopeCustomCss(s.customCss);
@@ -104,7 +108,8 @@ export async function buildSite(root: string, pages: SitePage[]): Promise<BuiltS
   const files: BuiltSite["files"] = [];
   const built: Array<SitePage & { title: string }> = [];
   const failed: string[] = [];
-  for (const page of pages) {
+  for (const [done, page] of pages.entries()) {
+    onPage?.(done, pages.length);
     try {
       const markdown = open.get(key(page.source)) ?? (await backend().readTextFile(page.source)).content;
       const name = basename(page.source);
@@ -123,6 +128,10 @@ export async function buildSite(root: string, pages: SitePage[]): Promise<BuiltS
   }
   return { files, failed, pageCount: built.length };
 }
+
+/** Shows the pages being built in the progress window titled `title`. */
+const buildProgress = (title: string) => (done: number, total: number) =>
+  useUi.getState().setProgress({ title, message: `Building page ${done + 1} of ${total}…`, fraction: done / total });
 
 const failedNote = (failed: string[]) => (failed.length ? ` Couldn't build: ${failed.slice(0, 3).join(", ")}${failed.length > 3 ? "…" : ""}.` : "");
 
@@ -163,13 +172,21 @@ export async function publishFolderToGitHubPages() {
       cancelId: "cancel",
     });
     if (go !== "publish") return;
-    notify("info", `Publishing ${pages.length} page${pages.length > 1 ? "s" : ""}…`);
-    const site = await buildSite(root, pages);
-    if (!site.pageCount) {
-      notify("error", `None of the pages could be built.${failedNote(site.failed)}`);
-      return;
+    // Building and pushing can take a while: a progress window says what's happening, and keeps a second publish from starting.
+    const title = "Publishing to GitHub Pages";
+    let site: BuiltSite;
+    let result: PublishResult;
+    try {
+      site = await buildSite(root, pages, buildProgress(title));
+      if (!site.pageCount) {
+        notify("error", `None of the pages could be built.${failedNote(site.failed)}`);
+        return;
+      }
+      useUi.getState().setProgress({ title, message: "Sending the pages to the repository's remote…", fraction: null });
+      result = await backend().gitPublishPages(root, site.files, `Publish ${site.pageCount} page${site.pageCount > 1 ? "s" : ""} from ${basename(root)}`);
+    } finally {
+      useUi.getState().setProgress(null);
     }
-    const result = await backend().gitPublishPages(root, site.files, `Publish ${site.pageCount} page${site.pageCount > 1 ? "s" : ""} from ${basename(root)}`);
     const what = result.unchanged ? "The pages haven't changed since they were last published" : `Published ${site.pageCount} page${site.pageCount > 1 ? "s" : ""} (commit ${result.commit})`;
     const where = `${what} to the gh-pages branch on ${result.remote}.${failedNote(site.failed)}`;
     if (!result.url) {
@@ -219,17 +236,24 @@ export async function exportFolderAsHtmlSite() {
       if (choice !== "replace") return;
     }
 
-    notify("info", `Exporting ${pages.length} page${pages.length > 1 ? "s" : ""}…`);
-    const site = await buildSite(root, pages);
-    const failed = [...site.failed];
+    const title = "Exporting the folder as an HTML site";
+    let site: BuiltSite;
+    const failed: string[] = [];
     let written = 0;
-    for (const file of site.files) {
-      try {
-        await writeSiteFile(out, file.path, file.content);
-        if (file.path.toLowerCase() !== "index.html" || hasIndex) written++;
-      } catch {
-        failed.push(file.path);
+    try {
+      site = await buildSite(root, pages, buildProgress(title));
+      failed.push(...site.failed);
+      useUi.getState().setProgress({ title, message: `Writing ${site.files.length} file${site.files.length > 1 ? "s" : ""}…`, fraction: null });
+      for (const file of site.files) {
+        try {
+          await writeSiteFile(out, file.path, file.content);
+          if (file.path.toLowerCase() !== "index.html" || hasIndex) written++;
+        } catch {
+          failed.push(file.path);
+        }
       }
+    } finally {
+      useUi.getState().setProgress(null);
     }
     if (failed.length) {
       notify("warning", `Exported ${written} of ${pages.length} pages to ${out}. Couldn't export: ${failed.slice(0, 3).join(", ")}${failed.length > 3 ? "…" : ""}.`);

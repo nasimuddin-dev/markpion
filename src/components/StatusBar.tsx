@@ -1,29 +1,10 @@
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { LARGE_DOCUMENT_CHARS } from "../services/limits";
+import { useMemo, useState } from "react";
+import { useFollowedText } from "./useFollowedText";
 import { useGit } from "../stores/gitStore";
 import { useDocuments, isDirty } from "../stores/documentsStore";
 import { useUi } from "../stores/uiStore";
 import { useSettings } from "../stores/settingsStore";
 import { countWords, readingEaseLabel, textStats } from "../services/textStats";
-
-/**
- * The text the live counts are computed from. Normally it follows the
- * document at a lower priority than typing (React defers it); above
- * LARGE_DOCUMENT_CHARS it updates at most every `ms`, so counting words in a
- * huge document never runs on every keystroke.
- */
-function useCountedText(text: string | undefined, ms = 2000): string | undefined {
-  const deferred = useDeferredValue(text);
-  const large = text !== undefined && text.length > LARGE_DOCUMENT_CHARS;
-  const [settled, setSettled] = useState(text);
-  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  useEffect(() => {
-    if (!large) return;
-    timer.current = setTimeout(() => setSettled(text), ms);
-    return () => clearTimeout(timer.current);
-  }, [text, large, ms]);
-  return large ? settled : deferred;
-}
 
 const ease = (score: number | null) => (score === null ? "—" : `${score} (${readingEaseLabel(score)})`);
 import { getEditorView, showProblems } from "../features/editorBridge";
@@ -42,7 +23,7 @@ export function StatusBar() {
   const lintOn = useSettings((s) => s.settings.lintMarkdown);
   const problems = useUi((s) => s.problems);
   const goals = useSettings((s) => s.settings.wordGoals);
-  const counted = useCountedText(doc?.content) ?? "";
+  const counted = useFollowedText(doc?.content, doc?.id) ?? "";
   const words = useMemo(() => countWords(counted), [counted]);
 
   let state = "";

@@ -104,7 +104,7 @@ Open `index.html` in any browser to read the site.
 
 **File → Publish → Folder to GitHub Pages…** builds the same site and puts it on the web with [GitHub Pages](https://pages.github.com/), when the open folder is in a Git repository with a remote on GitHub:
 
-1. Markpion asks first, then builds the pages (unsaved changes in open tabs included).
+1. Markpion asks first, then builds the pages (unsaved changes in open tabs included). A progress window shows the page being built, and then that the pages are being sent.
 2. It commits them to the repository's **gh-pages** branch, replacing the pages published before, and pushes that branch to the remote with your Git credentials, as **Push** in the Git tab does.
 3. It shows the site's address (`https://<owner>.github.io/<repository>/`) with an **Open Site** button.
 

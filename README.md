@@ -118,7 +118,7 @@ For requirements, checksum verification, silent install, uninstalling and troubl
 - Table → Convert Selection to Table (comma, tab, semicolon or pipe separated text); align and move columns
 - Edit menu line tools: Sort Lines (natural order), Remove Duplicate Lines, Join Lines, Reflow Paragraph (Alt+Q: hard-wraps at the line length, keeping list, quote and hard-break markup) and Unwrap Paragraph, and Uppercase / Lowercase / Title Case
 - Copy button on code blocks in the preview (on hover or keyboard focus)
-- Large documents: long previews are built in parts as you scroll to them; live preview pauses above 1 MB of text, with render-on-demand
+- Large documents: long previews are built in parts as you scroll to them; above 50,000 characters the outline and the word count catch up when typing pauses; live preview pauses above 1 MB of text, with render-on-demand
 - Rename a file from its tab (Rename…) or, with no folder open, from the Explorer's Open Files list (F2), with recent files one click away; Open Folder starts in the file's folder
 - Compare with File… (File menu, or Compare with Active File in the Explorer): a line diff between the document and another file in the folder, with the changed words within a line marked
 - Read-only files open locked (a bar offers Save As or Edit Anyway; formatting commands can't change them either), and View → Editor → Read-Only protects any document from accidental edits

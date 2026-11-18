@@ -262,6 +262,15 @@
   white-space: nowrap;
   text-align: left;
 }
+/* What a pull or push is doing; takes no room when nothing is running. */
+.scm-working {
+  margin: 0 var(--space-5);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+.scm-working:not(:empty) {
+  margin-bottom: var(--space-4);
+}
 .scm-commit {
   display: flex;
   flex-direction: column;

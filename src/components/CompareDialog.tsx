@@ -47,7 +47,7 @@ export function CompareDialog() {
         {other === null ? (
           <p className="muted">Loading…</p>
         ) : diff === null ? (
-          <p className="muted">These documents are too large to compare.</p>
+          <p className="muted">These documents differ too much to compare line by line.</p>
         ) : stats && stats.added + stats.removed === 0 ? (
           <p className="muted">The two documents are identical.</p>
         ) : (

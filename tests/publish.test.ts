@@ -28,10 +28,15 @@ describe("Publish Folder to GitHub Pages", () => {
     const backend = repo();
     const publish = vi.spyOn(backend, "gitPublishPages").mockResolvedValue({ commit: "abc1234", remote: "origin", url: "https://owner.github.io/notes/", unchanged: false });
     const open = vi.spyOn(backend, "openExternal").mockResolvedValue();
+    // What the progress window says, step by step.
+    const steps: string[] = [];
+    const stop = useUi.subscribe((s, prev) => s.progress !== prev.progress && steps.push(s.progress ? `${s.progress.message} ${s.progress.fraction ?? "-"}` : "closed"));
     const done = publishFolderToGitHubPages();
     expect((await answer("publish")).message).toMatch(/^2 pages will be built from “ws”, committed to the gh-pages branch/);
     const published = await answer("open");
     await done;
+    stop();
+    expect(steps).toEqual(["Building page 1 of 2… 0", "Building page 2 of 2… 0.5", "Sending the pages to the repository's remote… -", "closed"]);
 
     const [root, files, message] = publish.mock.calls[0];
     expect(root).toBe("/ws");
@@ -70,5 +75,7 @@ describe("Publish Folder to GitHub Pages", () => {
     await answer("publish");
     await done;
     expect(useUi.getState().toasts.at(-1)?.message).toBe("Couldn't publish the folder: This repository has no remote to publish to. Add one (for example on GitHub) with your Git tool first.");
+    // The progress window doesn't stay open after a failure.
+    expect(useUi.getState().progress).toBeNull();
   });
 });

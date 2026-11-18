@@ -2,14 +2,92 @@ export type DiffLine = { kind: "same" | "add" | "del"; text: string; oldNo?: num
 export type DiffRow = DiffLine | { kind: "gap"; hidden: number };
 
 const MAX_CELLS = 4_000_000;
+/** Changed lines the edit-script search gives up after (its memory grows with the square of this). */
+const MAX_EDITS = 2000;
 
 /**
- * Line diff (LCS). `a` is the old text, `b` the new one. Returns `null` when
- * the inputs are too large to diff interactively.
+ * The shortest edit script from `a` to `b` (Myers' greedy algorithm): its time
+ * and memory depend on how many lines differ, not on how long the texts are,
+ * so a few edits far apart in a long document compare quickly. Returns one
+ * entry per step, in order: 0 a line in both, 1 a line only in `a`, 2 a line
+ * only in `b` (SAME, DEL and ADD below); or null when more than `maxEdits`
+ * lines differ.
  */
-export function diffLines(a: string, b: string, maxCells = MAX_CELLS): DiffLine[] | null {
-  const A = a.split("\n");
-  const B = b.split("\n");
+function editScript(a: string[], b: string[], maxEdits: number): Uint8Array | null {
+  const n = a.length;
+  const m = b.length;
+  const max = Math.min(n + m, maxEdits);
+  // v[k + max + 1]: the furthest x reached on diagonal k (x - y = k).
+  const v = new Int32Array(2 * max + 3);
+  const trace: Int32Array[] = [];
+  let found = -1;
+  for (let d = 0; d <= max && found < 0; d++) {
+    trace.push(v.slice(max + 1 - d, max + 2 + d));
+    for (let k = -d; k <= d; k += 2) {
+      const i = k + max + 1;
+      let x = k === -d || (k !== d && v[i - 1] < v[i + 1]) ? v[i + 1] : v[i - 1] + 1;
+      let y = x - k;
+      while (x < n && y < m && a[x] === b[y]) {
+        x++;
+        y++;
+      }
+      v[i] = x;
+      if (x >= n && y >= m) {
+        found = d;
+        break;
+      }
+    }
+  }
+  if (found < 0) return null;
+
+  // Walk back from the end; the steps come out last to first.
+  const steps = new Uint8Array(n + m);
+  let count = 0;
+  let x = n;
+  let y = m;
+  for (let d = found; d > 0; d--) {
+    const before = trace[d];
+    const k = x - y;
+    const at = (diagonal: number) => before[diagonal + d];
+    const prevK = k === -d || (k !== d && at(k - 1) < at(k + 1)) ? k + 1 : k - 1;
+    const prevX = at(prevK);
+    const prevY = prevX - prevK;
+    while (x > prevX && y > prevY) {
+      steps[count++] = 0;
+      x--;
+      y--;
+    }
+    steps[count++] = x === prevX ? 2 : 1;
+    x = prevX;
+    y = prevY;
+  }
+  for (; x > 0; x--) steps[count++] = 0;
+  return steps.subarray(0, count).reverse();
+}
+
+/** A step of a comparison: a line in both texts, only in the old one, or only in the new one. */
+const SAME = 0;
+const DEL = 1;
+const ADD = 2;
+
+/** The changed middle of two texts: what's between the lines they start and end with alike. */
+export interface LineChanges {
+  /** Lines the texts start with alike. */
+  start: number;
+  /** Where the lines they end with alike begin, in the old and in the new text. */
+  endA: number;
+  endB: number;
+  /** The steps (SAME, DEL, ADD) through the lines between, in order. */
+  steps: Uint8Array;
+}
+
+/**
+ * Compares two texts line by line. A small changed part is compared with an
+ * LCS table (up to `maxCells` cells); a larger one by its shortest edit
+ * script, as long as at most `maxEdits` lines differ. Returns `null` when the
+ * texts differ too much to diff interactively.
+ */
+export function lineChanges(A: string[], B: string[], maxCells = MAX_CELLS, maxEdits = MAX_EDITS): LineChanges | null {
   // Trim common prefix/suffix first; most edits are local.
   let start = 0;
   while (start < A.length && start < B.length && A[start] === B[start]) start++;
@@ -19,37 +97,75 @@ export function diffLines(a: string, b: string, maxCells = MAX_CELLS): DiffLine[
     endA--;
     endB--;
   }
+  const n = endA - start;
+  const m = endB - start;
+  if (!n || !m) return { start, endA, endB, steps: new Uint8Array(n + m).fill(n ? DEL : ADD) };
   const a2 = A.slice(start, endA);
   const b2 = B.slice(start, endB);
-  if (a2.length * b2.length > maxCells) return null;
+  if (n * m > maxCells) {
+    const script = editScript(a2, b2, maxEdits);
+    if (!script) return null;
+    // Within a changed block the removed lines come first, as in `git diff`.
+    for (let i = 0; i < script.length; ) {
+      if (script[i] === SAME) {
+        i++;
+        continue;
+      }
+      let to = i;
+      let removed = 0;
+      for (; to < script.length && script[to] !== SAME; to++) if (script[to] === DEL) removed++;
+      script.fill(DEL, i, i + removed).fill(ADD, i + removed, to);
+      i = to;
+    }
+    return { start, endA, endB, steps: script };
+  }
 
   // LCS table over the differing middle.
-  const n = a2.length;
-  const m = b2.length;
   const dp = Array.from({ length: n + 1 }, () => new Uint32Array(m + 1));
   for (let i = n - 1; i >= 0; i--) {
     for (let j = m - 1; j >= 0; j--) {
       dp[i][j] = a2[i] === b2[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
     }
   }
-
-  const out: DiffLine[] = [];
-  for (let k = 0; k < start; k++) out.push({ kind: "same", text: A[k], oldNo: k + 1, newNo: k + 1 });
+  const steps = new Uint8Array(n + m);
+  let count = 0;
   let i = 0;
   let j = 0;
   while (i < n || j < m) {
     if (i < n && j < m && a2[i] === b2[j]) {
-      out.push({ kind: "same", text: a2[i], oldNo: start + i + 1, newNo: start + j + 1 });
+      steps[count++] = SAME;
       i++;
       j++;
       // On a tie the removed line comes first, as in `git diff`.
     } else if (i < n && (j >= m || dp[i + 1][j] >= dp[i][j + 1])) {
-      out.push({ kind: "del", text: a2[i], oldNo: start + i + 1 });
+      steps[count++] = DEL;
       i++;
     } else {
-      out.push({ kind: "add", text: b2[j], newNo: start + j + 1 });
+      steps[count++] = ADD;
       j++;
     }
+  }
+  return { start, endA, endB, steps: steps.subarray(0, count) };
+}
+
+/**
+ * Line diff. `a` is the old text, `b` the new one. Returns `null` when the
+ * texts differ too much to diff interactively (see `lineChanges`).
+ */
+export function diffLines(a: string, b: string, maxCells = MAX_CELLS, maxEdits = MAX_EDITS): DiffLine[] | null {
+  const A = a.split("\n");
+  const B = b.split("\n");
+  const changes = lineChanges(A, B, maxCells, maxEdits);
+  if (!changes) return null;
+  const { start, endA, endB, steps } = changes;
+  const out: DiffLine[] = [];
+  for (let k = 0; k < start; k++) out.push({ kind: "same", text: A[k], oldNo: k + 1, newNo: k + 1 });
+  let i = start;
+  let j = start;
+  for (const step of steps) {
+    if (step === DEL) out.push({ kind: "del", text: A[i], oldNo: ++i });
+    else if (step === ADD) out.push({ kind: "add", text: B[j], newNo: ++j });
+    else out.push({ kind: "same", text: A[i], oldNo: ++i, newNo: ++j });
   }
   for (let k = 0; k < A.length - endA; k++) {
     out.push({ kind: "same", text: A[endA + k], oldNo: endA + k + 1, newNo: endB + k + 1 });

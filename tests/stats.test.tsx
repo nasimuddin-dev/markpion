@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { countSentences, readingEase, textStats } from "../src/services/textStats";
+import { countSentences, countWords, readingEase, textStats } from "../src/services/textStats";
 import { StatusBar } from "../src/components/StatusBar";
 import { newDocument } from "../src/features/documents";
 import { setupBackend } from "./helpers";
@@ -23,6 +23,31 @@ describe("text statistics", () => {
     expect(textStats("")).toMatchObject({ words: 0, lines: 0, paragraphs: 0, readingMinutes: 0 });
     expect(textStats("word ".repeat(1150)).readingMinutes).toBe(5);
     expect(textStats("word ".repeat(1300)).speakingMinutes).toBe(10);
+  });
+
+  it("counts words like the word pattern, in every script", () => {
+    const pattern = /[\p{L}\p{N}][\p{L}\p{N}'’_-]*/gu;
+    const samples = [
+      "",
+      "don't stop-gap snake_case it’s",
+      "'quoted' -dash _under 'tis",
+      "café naïve über straße добрый день",
+      "日本語 中文 한국어",
+      "math \u{1D400}\u{1D401} and \u{1F680} rocket\u{1F680}ship",
+      "lone \ud800 surrogate b\ud800a x\udc00y",
+      "3.14 1,000 v2-beta a--b a-'b _ - ' 42",
+      "# Title\n\n- [ ] task one\n- [x] `code` **bold**\n\n| a | b |\n",
+    ];
+    // Pieces in every order, so words meet every kind of neighbour.
+    const pieces = ["a", "Z", "9", "'", "’", "_", "-", " ", "\n", ".", "é", "日", "\u{1F680}", "\u{1D400}", "\ud800"];
+    let seed = 7;
+    const next = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff);
+    for (let n = 0; n < 300; n++) {
+      let text = "";
+      for (let k = 0; k < 40; k++) text += pieces[next() % pieces.length];
+      samples.push(text);
+    }
+    for (const text of samples) expect(countWords(text), JSON.stringify(text)).toBe(text.match(pattern)?.length ?? 0);
   });
 
   it("counts sentences, headings and list items", () => {

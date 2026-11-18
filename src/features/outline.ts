@@ -1,5 +1,5 @@
 import GithubSlugger from "github-slugger";
-import { protectedLines } from "../services/markdownSections";
+import { scanLines } from "../services/markdownSections";
 
 export interface Heading {
   level: number;
@@ -29,9 +29,8 @@ export function plainHeadingText(raw: string): string {
  * `$$` math blocks and multi-line HTML such as comments and `<pre>`.
  */
 export function extractHeadings(text: string): Heading[] {
-  const lines = text.split("\n");
+  const { lines, shielded } = scanLines(text);
   const headings: Heading[] = [];
-  const shielded = protectedLines(lines);
   let start = 0;
 
   // YAML front matter at the very top.

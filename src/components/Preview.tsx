@@ -15,7 +15,7 @@ import { openLink } from "../features/followLink";
 import { revealLineAt } from "../features/editorBridge";
 import { lineForTop, rehypeHeadingIds, rehypeSourceLines, topForLine } from "../services/sourceLines";
 import { hasFootnotes, referenceDefinitions, splitSections } from "../services/markdownSections";
-import { extractHeadings, headingSlugs } from "../features/outline";
+import { extractHeadings, headingSlugs, headingsOf } from "../features/outline";
 import { taskCounts } from "../features/taskCount";
 import rehypeSlug from "rehype-slug";
 import { toggleTaskInDocument } from "../features/tasks";
@@ -280,38 +280,72 @@ export const MarkdownView = memo(function MarkdownView({ text, docPath, sectionA
  * so an edit re-parses only the sections it affects. Its blocks' source lines
  * count from the section's start; the wrapper carries the offset.
  */
+/** What a section's text says about it, kept by the text: an edit changes one section, the rest are looked up. */
+const sectionFacts = new Map<string, { headings: number; tasks: number; height: number }>();
+const SECTION_FACTS_KEPT = 20_000;
+
+function factsOf(source: string) {
+  let facts = sectionFacts.get(source);
+  if (!facts) {
+    facts = {
+      headings: extractHeadings(source).length,
+      tasks: source.includes("[") ? taskCounts(source).total : 0,
+      height: estimateHeight(source, source.split("\n\n").length),
+    };
+    if (sectionFacts.size >= SECTION_FACTS_KEPT) sectionFacts.clear();
+    sectionFacts.set(source, facts);
+  }
+  return facts;
+}
+
 function SectionedMarkdown({ text, docPath }: { text: string; docPath: string | null }) {
   const sections = useMemo(() => {
     const parts = splitSections(text);
     const definitions = referenceDefinitions(text);
     // Heading ids numbered across the whole document, then handed to each section in order.
-    const ids = headingSlugs(extractHeadings(text));
+    const ids = headingSlugs(headingsOf(text));
     let heading = 0;
     let tasks = 0;
     return parts.map((part) => {
-      const count = extractHeadings(part.source).length;
+      const facts = factsOf(part.source);
       const section = {
         ...part,
         definitions,
-        ids: ids.slice(heading, heading + count).join("\u0000"),
+        ids: ids.slice(heading, heading + facts.headings).join("\u0000"),
         tasksBefore: tasks,
-        height: estimateHeight(part.source, part.source.split("\n\n").length),
+        height: facts.height,
       };
-      heading += count;
-      tasks += taskCounts(part.source).total;
+      heading += facts.headings;
+      tasks += facts.tasks;
       return section;
     });
   }, [text]);
   return (
     <>
       {sections.map((s, i) => (
-        <PreviewChunk key={i} index={String(i)} height={String(s.height)} tasksBefore={String(s.tasksBefore)} line={String(s.startLine)} lineOffset={s.startLine - 1}>
-          <SectionMarkdown source={s.source} definitions={s.definitions} ids={s.ids} docPath={docPath} />
-        </PreviewChunk>
+        <PreviewSection key={i} index={i} height={s.height} tasksBefore={s.tasksBefore} startLine={s.startLine} source={s.source} definitions={s.definitions} ids={s.ids} docPath={docPath} />
       ))}
     </>
   );
 }
+
+/** One section and its placeholder. Memoized: after an edit only the sections whose text, place or ids changed render again. */
+const PreviewSection = memo(function PreviewSection({ index, height, tasksBefore, startLine, source, definitions, ids, docPath }: {
+  index: number;
+  height: number;
+  tasksBefore: number;
+  startLine: number;
+  source: string;
+  definitions: string;
+  ids: string;
+  docPath: string | null;
+}) {
+  return (
+    <PreviewChunk index={String(index)} height={String(height)} tasksBefore={String(tasksBefore)} line={String(startLine)} lineOffset={startLine - 1}>
+      <SectionMarkdown source={source} definitions={definitions} ids={ids} docPath={docPath} />
+    </PreviewChunk>
+  );
+});
 
 const SectionMarkdown = memo(function SectionMarkdown({ source, definitions, ids, docPath }: {
   source: string;

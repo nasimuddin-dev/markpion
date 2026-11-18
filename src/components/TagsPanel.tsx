@@ -68,7 +68,7 @@ export function TagsPanel() {
         </div>
       </div>
       <div className="search-summary" role="status" aria-live="polite">
-        {tags === null ? "Finding tags…" : sorted.length ? `${sorted.length} ${sorted.length === 1 ? "tag" : "tags"}` : "No #tags in this folder yet."}
+        {tags === null ? "Finding tags…" : sorted.length ? `${sorted.length} ${sorted.length === 1 ? "tag" : "tags"}` : "No #tags in this folder yet. Type # and a word in a document (for example #draft) to tag it."}
       </div>
       {sorted.length > 0 && (
         <ul className="search-results" aria-label="Tags">

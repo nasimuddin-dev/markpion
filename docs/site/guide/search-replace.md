@@ -13,6 +13,8 @@ The search bar has three options:
 
 - **Match case**: `Readme` doesn't match `README`.
 - **Whole word**: finds whole words only.
+
+The options sit on a row between the Find and Replace fields.
 - **Regex**: treats the search as a regular expression, for example `^## ` for level-2 headings or `\bTODO\b`.
 
 Press **Esc** to close it.

@@ -927,3 +927,21 @@ The user asked for a review of the code for performance and user friendliness, t
 **Still open in the audit (low severity, below CI's threshold):** KaTeX's "prototype pollution can bypass trust restrictions"; the fix is KaTeX 0.19, a breaking upgrade that rehype-katex, remark-math and Mermaid must accept first.
 
 **Next up:** typing in very large documents (900 KB) and a review of every screen (the user's request of 2026-11-17), more document design tools, then the plugin system (design awaiting the user's answer), then large documents, then remind the user about the cloud integration.
+
+## 2026-11-17 (later): very large documents, screen review, Rust advisories, 0.29.1
+
+The user asked to fix the two items left open after the review: typing at 900 KB, and a real look at the screens.
+
+| Item | Commit |
+| --- | --- |
+| Markdown checks in a web worker above 50,000 characters, with a fallback to the window; per-section facts cached by text and memoized sections in the preview; one shared scan of the lines; an early exit for comparisons of very different length | (this release's commit) |
+| Screen review of the 32 visual screens: the Find and Replace bar laid out in two aligned rows, Find in Files results keep the match in view, the empty Tags panel explains tagging. The other screens needed no change | (this release's commit) |
+| CI's dependency audit also failed on the Rust side (advisories published after 0.28.0): rustls, rustls-webpki and webpki-root-certs updated; the updater plugin built without its `zip` feature (zip 4.6.1 has advisories and the plugin accepts no fixed version) | (this release's commit) |
+
+**Measured** (production build, headless Edge, 900 KB, typing with 450 ms pauses): longest frame 446 ms before, 89 ms after; frames over 100 ms 7 before, 0 after; script per keystroke 211 ms before, 132 ms after. Fast typing: 55 ms before, 32 ms after.
+
+**Version:** 0.29.1. **Tests:** Vitest 716 (129 files), Playwright 147, Rust 63 (+1 ignored), native 8, visual 32 screens (local).
+
+**Unverified:** an in-app update performed by a build without the updater's `zip` feature. The code path for a plain installer doesn't use it and the app builds and passes its tests, but the first real check is updating from 0.29.1 to the next version. One native test failed once in a regression run (a click on Stage was blocked by an open menu item) and passed in three later runs; the cause wasn't found.
+
+**Next up:** more document design tools if the user wants them, the plugin system (design awaiting the user's answer), KaTeX 0.19 when its dependants allow it, then remind the user about the cloud integration.

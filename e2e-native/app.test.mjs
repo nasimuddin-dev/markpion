@@ -93,6 +93,25 @@ describe("the desktop app", () => {
     }
   });
 
+  it("checks a long document in a web worker, which the app's content security policy allows", async () => {
+    const file = join(dir, "long.md");
+    // Over 50,000 characters, with one problem the checks report (a heading without a space after the #).
+    writeFileSync(file, `# Long\n\n#Broken heading\n\n${"A paragraph of ordinary text for the long document.\n\n".repeat(1200)}`);
+    const s = await Session.start(APP);
+    try {
+      await s.find("h1");
+      await s.exec("window.__blocked = []; addEventListener('securitypolicyviolation', (e) => window.__blocked.push(e.violatedDirective + ' ' + e.blockedURI)); return true");
+      openWithApp(file);
+      await s.waitFor(async () => /long\.md/.test(await s.exec(ACTIVE_TAB)), "the long.md tab");
+      // The problem count appears in the status bar once the checks have run.
+      await s.waitFor(() => s.exec("return /⚠\\s*[1-9]/.test(document.querySelector('.statusbar')?.textContent ?? '')"), "the problems in the status bar", 20_000);
+      assert.equal(await s.exec("return performance.getEntriesByName('markpion:lint-in-worker').length"), 1, "the worker answered");
+      assert.deepEqual(await s.exec("return window.__blocked"), []);
+    } finally {
+      await s.quit();
+    }
+  });
+
   it("Source Control stages and commits with the real Git", async () => {
     const git = (...args) => {
       const r = spawnSync("git", ["-C", repoDir, ...args], { encoding: "utf8" });

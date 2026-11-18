@@ -86,6 +86,25 @@ export function protectedLines(lines: string[]): boolean[] {
   return out;
 }
 
+/** A text's lines and which of them are protected. */
+export interface ScannedLines {
+  lines: string[];
+  shielded: boolean[];
+}
+
+/** Texts at least this long keep their last scan: the preview and the outline read the same long document several times after each edit. */
+const KEEP_SCAN_CHARS = 50_000;
+let lastScan: ({ text: string } & ScannedLines) | null = null;
+
+/** The lines of `text` and their `protectedLines`. Don't change the returned arrays. */
+export function scanLines(text: string): ScannedLines {
+  if (lastScan?.text === text) return lastScan;
+  const lines = text.split("\n");
+  const scan = { text, lines, shielded: protectedLines(lines) };
+  if (text.length >= KEEP_SCAN_CHARS) lastScan = scan;
+  return scan;
+}
+
 /** Whether a document uses footnotes (their numbering spans the document, so it isn't split). */
 export function hasFootnotes(text: string): boolean {
   return FOOTNOTE.test(text);
@@ -93,8 +112,7 @@ export function hasFootnotes(text: string): boolean {
 
 /** The document's reference-style link definitions, one per line (given to every section). */
 export function referenceDefinitions(text: string): string {
-  const lines = text.split("\n");
-  const shielded = protectedLines(lines);
+  const { lines, shielded } = scanLines(text);
   return lines.filter((line, i) => !shielded[i] && DEFINITION.test(line)).join("\n");
 }
 
@@ -104,8 +122,7 @@ export function referenceDefinitions(text: string): string {
  * back the text exactly.
  */
 export function splitSections(text: string, minChars = 8000): MarkdownSection[] {
-  const lines = text.split("\n");
-  const shielded = protectedLines(lines);
+  const { lines, shielded } = scanLines(text);
   const sections: MarkdownSection[] = [];
   let start = 0;
   let size = 0;

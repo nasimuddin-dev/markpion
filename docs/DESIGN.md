@@ -331,7 +331,7 @@ flowchart LR
   DEV --> DOCS[documentation.yml:<br/>VitePress site from docs/site/<br/>→ GitHub Pages]
 ```
 
-The updater's private signing key never enters the repository; it stays in `~/.tauri/` on the release machine.
+The updater's private signing key never enters the repository; it stays in `~/.tauri/` on the release machine. The updater plugin is built without its `zip` feature: Windows updates are plain signed installers, so the archive-unpacking code (and the `zip`, `tar` and `flate2` crates) stays out of the app. In-place updates on macOS and Linux, which use `.tar.gz` archives, would need that feature back.
 
 ## 13. Backend adapters and the road to a cloud version
 

@@ -215,10 +215,26 @@
   color: var(--text);
   border-color: var(--border);
 }
+/* Find on the first row with its buttons and options, Replace on the second; the fields line up. */
 .editor-host .cm-panel.cm-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
   padding: var(--space-4) var(--space-10) var(--space-4) var(--space-5);
   font-family: var(--font-ui);
   font-size: var(--text-sm);
+}
+.editor-host .cm-panel.cm-search .cm-textfield {
+  flex: 0 1 240px;
+  min-width: 120px;
+}
+/* The line break between the two rows. */
+.editor-host .cm-panel.cm-search br {
+  display: block;
+  flex-basis: 100%;
+  height: 0;
+  content: "";
 }
 .editor-host .cm-panel input[type="checkbox"] {
   accent-color: var(--accent);
@@ -226,12 +242,15 @@
   vertical-align: -2px;
 }
 .editor-host .cm-panel.cm-search label {
-  margin-left: var(--space-5);
+  display: inline-flex;
+  align-items: center;
+  margin-left: var(--space-3);
+  font-size: var(--text-sm);
   white-space: nowrap;
 }
 .editor-host .cm-panel.cm-search .cm-button,
 .editor-host .cm-panel.cm-search .cm-textfield {
-  margin: var(--space-1) var(--space-2) var(--space-1) 0;
+  margin: 0;
 }
 .editor-host .cm-button:hover {
   background: var(--bg-hover);

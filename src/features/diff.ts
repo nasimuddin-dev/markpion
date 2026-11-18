@@ -103,6 +103,8 @@ export function lineChanges(A: string[], B: string[], maxCells = MAX_CELLS, maxE
   const a2 = A.slice(start, endA);
   const b2 = B.slice(start, endB);
   if (n * m > maxCells) {
+    // Each line one text has more than the other is at least one change.
+    if (Math.abs(n - m) > maxEdits) return null;
     const script = editScript(a2, b2, maxEdits);
     if (!script) return null;
     // Within a changed block the removed lines come first, as in `git diff`.

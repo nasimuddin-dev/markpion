@@ -6,7 +6,8 @@ import { toAppError } from "../services/errors";
 import { activeDoc } from "../stores/documentsStore";
 import { notify, useUi } from "../stores/uiStore";
 import { useSettings } from "../stores/settingsStore";
-import { fixAllProblems, fixChanges, LINT_RULES, lintLinks, lintMarkdown, type ProblemFix } from "./lint";
+import { fixAllProblems, fixChanges, LINT_RULES, lintLinks, type ProblemFix } from "./lint";
+import { lintMarkdownAsync } from "./lintBackground";
 import { minimalChange } from "./saveTransforms";
 import { LARGE_DOCUMENT_CHARS } from "../services/limits";
 
@@ -100,7 +101,7 @@ export function markdownLinter(): Extension {
         const text = view.state.doc.toString();
         const doc = activeDoc();
         const hidden = new Set(useSettings.getState().settings.lintDisabledRules);
-        const problems = [...lintMarkdown(text), ...(await lintLinks(text, doc?.path ?? null, exists, filesIn))].filter((p) => !hidden.has(p.rule));
+        const problems = [...(await lintMarkdownAsync(text)), ...(await lintLinks(text, doc?.path ?? null, exists, filesIn))].filter((p) => !hidden.has(p.rule));
         const len = view.state.doc.length;
         const diagnostics: Diagnostic[] = problems.map((p) => ({
           from: Math.min(p.from, len),

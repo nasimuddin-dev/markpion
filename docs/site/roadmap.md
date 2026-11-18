@@ -28,7 +28,7 @@ See the [changelog](/changelog) for details per version.
 ## Planned
 
 - **All math in PDF export:** every inline formula. Display formulas are drawn on every system, and inline formulas are set as text in KaTeX's fonts, including negated symbols, nested scripts and matrices; inline formulas with accents (`\hat{x}`, `\vec{v}`) or less common commands (`\binom`, `\mathcal`) still keep their LaTeX. HTML export and Print → Save as PDF render all formulas.
-- **Performance:** keeping very large documents (several MB) responsive while every section is open in the preview, and trimming the start-up bundle further. (Long documents now appear section by section, and the start-up bundle lost 120 KB; see the [changelog](/changelog).)
+- **Performance:** keeping very large documents (several MB) responsive while every section is open in the preview, and trimming the start-up bundle further. (Typing in documents around 1 MB no longer freezes at each pause; a pause still costs about 130 ms of work spread over several frames.) (Long documents now appear section by section, and the start-up bundle lost 120 KB; see the [changelog](/changelog).)
 - **End-to-end tests of the native app** on macOS (Windows and Linux have a first set; Linux runs in CI), and testing the macOS and Linux builds on real hardware.
 
 ## Considering

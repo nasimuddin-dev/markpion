@@ -33,6 +33,22 @@ function Toggle({ label, title, on, set }: { label: string; title: string; on: b
 }
 
 /** Find in Files across the open workspace. */
+/** Text kept before a match in a result line; more than this is cut from the start. */
+const LEAD_CHARS = 24;
+
+/**
+ * The text before a match, shortened from the start when it's long: a result
+ * line is one line of a narrow sidebar, and what must stay in view is the
+ * match itself, with a few words before it.
+ */
+export function matchLead(before: string): string {
+  if (before.length <= LEAD_CHARS) return before;
+  const tail = before.slice(-LEAD_CHARS);
+  // Start at a word when there's one to start at.
+  const space = tail.indexOf(" ");
+  return `…${space >= 0 && space < LEAD_CHARS - 8 ? tail.slice(space + 1) : tail}`;
+}
+
 export function SearchPanel() {
   const root = useWorkspace((s) => s.root);
   const focusToken = useUi((s) => s.searchFocusToken);
@@ -205,7 +221,7 @@ export function SearchPanel() {
                     {f.matches.map((m, i) => (
                       <li key={i}>
                         <button className="search-match" title={`Line ${m.line}`} onClick={() => void open(f.path, m)}>
-                          {m.preview.slice(0, m.previewStart)}
+                          {matchLead(m.preview.slice(0, m.previewStart))}
                           <mark>{m.preview.slice(m.previewStart, m.previewStart + m.length)}</mark>
                           {m.preview.slice(m.previewStart + m.length)}
                         </button>

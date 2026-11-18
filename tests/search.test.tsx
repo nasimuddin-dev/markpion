@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { buildSearchRegex, searchText } from "../src/services/search";
-import { SearchPanel } from "../src/components/SearchPanel";
+import { matchLead, SearchPanel } from "../src/components/SearchPanel";
 import { setWorkspace } from "../src/features/workspace";
 import { useDocuments } from "../src/stores/documentsStore";
 import { docs, setupBackend } from "./helpers";
@@ -78,5 +78,18 @@ describe("workspace search", () => {
     await userEvent.click(screen.getByRole("button", { name: "Use regular expression" }));
     await userEvent.type(screen.getByRole("textbox", { name: "Search in files" }), "(");
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent(/Invalid regular expression/));
+  });
+});
+
+describe("search result lines", () => {
+  it("keep the match in view: a long lead-in is cut from the start, at a word", () => {
+    expect(matchLead("")).toBe("");
+    expect(matchLead("## GitHub Flavored ")).toBe("## GitHub Flavored ");
+    expect(matchLead("Markpion is a **local-first** ")).toBe("…is a **local-first** ");
+    expect(matchLead("A long sentence that goes on and on before the word ")).toBe("…and on before the word ");
+    // No space to start at: the last characters as they are.
+    const lead = matchLead("https://example.com/a/very/long/path/without/any/spaces/");
+    expect(lead).toBe("…path/without/any/spaces/");
+    expect(lead.length).toBe(25);
   });
 });

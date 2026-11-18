@@ -7,6 +7,22 @@ description: Release notes for every Markpion version, listing what was added, c
 
 Every release of Markpion, newest first. Dates are the GitHub release dates (UTC). Installers for each version are on the [GitHub releases page](https://github.com/nasimuddin-dev/markpion/releases).
 
+## v0.29.1
+
+Released: 2026-11-17 · [Release files](https://github.com/nasimuddin-dev/markpion/releases/tag/v0.29.1)
+
+### Changed
+
+- **Very large documents (around 1 MB) no longer freeze for a moment each time you pause typing.** The Markdown checks for long documents now run in the background, and the preview works out only what changed. In a 900 KB document the longest freeze went from about 0.4 seconds to under 0.15.
+- **Find and Replace bar:** the two fields line up, and the Match case, Regex and Whole word options sit on a row of their own in readable type.
+- **Find in Files results** keep the matched word in view: a long lead-in is shortened from the start instead of the match being cut off at the edge of the sidebar.
+- The empty **Tags** panel says how to make a tag.
+
+### Security
+
+- Updated the TLS libraries used for update checks and the AI connection (rustls 0.23.46, rustls-webpki 0.103.17, webpki-root-certs 1.0.12), which fix security advisories published for the earlier versions.
+- The updater no longer includes code for unpacking ZIP archives, which Markpion's updates never used (they are signed installers) and which had open security advisories.
+
 ## v0.29.0
 
 Released: 2026-11-17 · [Release files](https://github.com/nasimuddin-dev/markpion/releases/tag/v0.29.0)

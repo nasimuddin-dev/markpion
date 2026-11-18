@@ -7,6 +7,23 @@ description: Release notes for every Markpion version, listing what was added, c
 
 Every release of Markpion, newest first. Dates are the GitHub release dates (UTC). Installers for each version are on the [GitHub releases page](https://github.com/nasimuddin-dev/markpion/releases).
 
+## v0.28.1
+
+Released: 2026-11-17 · [Release files](https://github.com/nasimuddin-dev/markpion/releases/tag/v0.28.1)
+
+### Changed
+
+- **Typing in long documents is faster.** The Outline no longer redraws every heading on each keystroke, the word count is quicker, and the formatting toolbar redraws only when the formatting at the cursor changes. In a 200 KB document a keystroke costs about half of what it did.
+- In documents over 50,000 characters, the Outline, the breadcrumbs and the status bar's word and task counts catch up a moment after you stop typing.
+- **Notifications stay long enough to read:** longer messages stay longer, a notification stays while the pointer is on it, and a repeated message shows once instead of stacking.
+- **Publish Folder to GitHub Pages** and **Export Folder as HTML Site** show a progress window (the page being built, then sending or writing).
+- The **Git** tab says "Pulling from…" or "Pushing to…" while a pull or push runs.
+
+### Fixed
+
+- **Git change bars disappeared in long files** when the first and last edit were more than about 1,000 lines apart (the status bar's `+3 ~1` counts went with them). They now stay.
+- **Compare with File** and **File History** said a document was "too large to compare" when its changes were far apart. They now compare it, and say the texts differ too much only when more than 2,000 lines differ.
+
 ## v0.28.0
 
 Released: 2026-10-01 · [Release files](https://github.com/nasimuddin-dev/markpion/releases/tag/v0.28.0)

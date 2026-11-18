@@ -156,7 +156,9 @@ describe("the desktop app", () => {
       await s.waitFor(async () => !(await s.exec("return document.querySelector(\"button[aria-label^='Push']\").disabled")), "Push to be enabled");
       await s.click(await pushButton());
       await s.waitFor(() => /Commit from the native test/.test(spawnSync("git", ["-C", remote, "log", "-1", "--format=%s"], { encoding: "utf8" }).stdout), "the push");
-      assert.equal(git("rev-parse", "--abbrev-ref", "@{u}").trim(), "origin/main");
+      // Git records the upstream after the remote has the commit: wait for it rather than look once.
+      const upstream = () => spawnSync("git", ["-C", repoDir, "rev-parse", "--abbrev-ref", "@{u}"], { encoding: "utf8" }).stdout.trim();
+      await s.waitFor(() => upstream() === "origin/main", "the upstream to be set");
 
       const other = join(dir, "other");
       spawnSync("git", ["clone", "-q", remote, other]);

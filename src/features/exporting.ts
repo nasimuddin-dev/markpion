@@ -1,6 +1,7 @@
 import { backend } from "../services";
 import { describeError } from "../services/errors";
 import { scopeCustomCss } from "../services/customCss";
+import { documentCss } from "../services/documentStyles";
 import { buildHtmlDocument, exportFileName, printPageStyle, renderHtml } from "../services/exportHtml";
 import { activeDoc } from "../stores/documentsStore";
 import { editorDocId, getEditorView } from "./editorBridge";
@@ -39,7 +40,7 @@ export async function exportActiveAsHtml() {
   const doc = activeDoc();
   if (!doc) return;
   try {
-    const html = await buildHtmlDocument({ markdown: doc.content, name: doc.name, docPath: doc.path, loadImage, features: features(), css: scopeCustomCss(useSettings.getState().settings.customCss) });
+    const html = await buildHtmlDocument({ markdown: doc.content, name: doc.name, docPath: doc.path, loadImage, features: features(), css: scopeCustomCss(documentCss(useSettings.getState().settings)) });
     const saved = await backend().exportFile(exportFileName(doc.name, "html"), html, "html");
     if (saved) notify("success", `Exported to ${saved}`);
   } catch (e) {
@@ -78,7 +79,7 @@ export async function exportActiveAsLatex() {
 async function exportAsEpub(src: ExportSource) {
   try {
     const { markdownToEpub } = await import("../services/convert/toEpub");
-    const bytes = await markdownToEpub(src.content, { name: src.name, docPath: src.path, loadImage, features: features(), css: scopeCustomCss(useSettings.getState().settings.customCss) });
+    const bytes = await markdownToEpub(src.content, { name: src.name, docPath: src.path, loadImage, features: features(), css: scopeCustomCss(documentCss(useSettings.getState().settings)) });
     const saved = await backend().exportBinaryFile(exportFileName(src.name, "epub"), bytes, "epub");
     if (saved) notify("success", `Exported to ${saved}`);
   } catch (e) {

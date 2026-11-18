@@ -58,7 +58,17 @@ Existing files always keep their own line endings. Untitled documents are never 
 | Render Mermaid diagrams | | On |
 | Show pictures from the web in the preview | Off: an `https://` picture in a document is shown as a placeholder and no request leaves the computer. HTML export keeps the links either way | On |
 | Sync editor and preview scrolling | | On |
+| Document style | Default, Book, Report, Compact | Default |
 | Custom CSS for documents | Your own CSS | Empty |
+
+**Document style** gives your documents a ready-made look without writing CSS (also in **View → Document Style**):
+
+- **Default**: clean sans-serif type, like GitHub.
+- **Book**: serif type, a centred title and justified paragraphs, for long reading.
+- **Report**: strong headings with a rule under them and full-width tables, for documents you hand over.
+- **Compact**: smaller type and tighter spacing, to see more of a page of notes.
+
+A style changes type and spacing only, so it works in the light and the dark theme. It applies where custom CSS does (below), and your custom CSS comes after it, so you can adjust a style.
 
 **Custom CSS** styles your documents, for example with your organization's colours and fonts. It applies to the preview, printing, slides, **Export as HTML** and **Export Folder as HTML Site**, but not to PDF or Word export, which have their own layout. Rules only affect the document, never Markpion itself: `h1 { color: #0b4f8a; }` styles the document's headings, and `body` means the whole document. `@media`, `@font-face` and `@page` rules work; `@import` is ignored, so styles can't load other files. Managed settings can preset or lock it for everyone in an organization (see [Configuration](/reference/configuration)).
 

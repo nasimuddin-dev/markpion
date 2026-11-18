@@ -464,3 +464,57 @@ body.dragging-into-editor * {
   flex: none;
   opacity: 0.6;
 }
+
+/* Completion lists (the insert menu, links, emoji, tags): the app's menu look instead of the editor's type. */
+.editor-host .cm-tooltip.cm-tooltip-autocomplete {
+  padding: var(--space-2);
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+.editor-host .cm-tooltip.cm-tooltip-autocomplete > ul {
+  min-width: 260px;
+  max-width: min(420px, 90vw);
+  max-height: min(340px, 50vh);
+  font-family: var(--font-ui);
+  font-size: var(--text-md);
+}
+.editor-host .cm-tooltip-autocomplete > ul > li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-6);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  line-height: 1.5;
+}
+.editor-host .cm-tooltip-autocomplete > ul > li[aria-selected] {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+/* What the choice looks like in Markdown, to the right of its name. */
+.editor-host .cm-tooltip-autocomplete .cm-completionDetail {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-style: normal;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.editor-host .cm-tooltip-autocomplete li[aria-selected] .cm-completionDetail {
+  color: inherit;
+  opacity: 0.85;
+}
+/* Group names in the insert menu. */
+.editor-host .cm-tooltip-autocomplete > ul > completion-section {
+  display: block;
+  padding: var(--space-3) var(--space-4) var(--space-1);
+  border-bottom: none;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 1;
+}

@@ -903,9 +903,9 @@ Continuing the user's plan (every non-cloud feature, then the cloud integration)
 2. Large documents (several MB) responsive with every section open.
 3. Then remind the user to start the cloud integration (sync, collaboration, cloud backend, and publishing to platforms that need an account such as Confluence).
 
-## 2026-11-17: performance and usability review, 0.28.1
+## 2026-11-17: performance and usability review, easier document design, 0.29.0
 
-The user asked for a review of the code for performance and user friendliness, then to update the documents and publish.
+The user asked for a review of the code for performance and user friendliness, then to update the documents and publish, and for easier ways to design a document. (0.28.1 was prepared but not published: the dependency audit failed in CI on a new DOMPurify advisory, so its fix and the new features went out together as 0.29.0.)
 
 | Item | Commit |
 | --- | --- |
@@ -913,12 +913,17 @@ The user asked for a review of the code for performance and user friendliness, t
 | Git change bars vanished when edits were more than about 1,000 lines apart: a Myers edit script for changed parts too big for the LCS table (`lineChanges`); Compare and File History use it too | b658575 |
 | Notifications: time by length, held under the pointer or focus, repeated messages shown once; progress windows for Publish to GitHub Pages and Export Folder as HTML Site; "Pulling…/Pushing…" in the Git tab | b658575 |
 
+| Insert menu (type / on an empty line: 29 blocks in groups, filtered by label and other words), Insert Collapsible Section, document styles (Default, Book, Report, Compact; built-in CSS before the custom CSS), the completion list restyled with the app's tokens | (this release's commit) |
+| DOMPurify 3.4.16 → 3.4.18 (`npm audit fix`; a critical advisory, a transitive dependency of Mermaid), with about 50 other packages moved to newer compatible versions by the same command; THIRD_PARTY_NOTICES regenerated | (this release's commit) |
+
 **Measured** (production build, headless Edge, a paste event to load the text, CDP ScriptDuration): typing in a 200 KB document about 43 ms of script per keystroke before, 21 ms after; 14 ms in a 20 KB document.
 
-**Version:** 0.28.1. **Tests:** Vitest 699 (125 files), Playwright 146, Rust 63 (+1 ignored), native 7, visual 32 screens (local).
+**Version:** 0.29.0. **Tests:** Vitest 708 (127 files), Playwright 147, Rust 63 (+1 ignored), native 7, visual 32 screens (local).
 
 **Not fixed:** at 900 KB typing still costs 50 to 60 ms of script per keystroke with occasional 400 ms frames; what remains there hasn't been profiled (the roadmap's large-document item).
 
 **A false alarm worth remembering:** Playwright's `keyboard.insertText` with 60 to 200 KB took from 14 seconds to a crash of the page. That's the browser inserting text natively into the editable area, not the app: a real paste event takes about 35 ms at 900 KB.
 
-**Next up:** easier ways to design a document (the user's request of 2026-11-17), then the plugin system (design awaiting the user's answer), then large documents, then remind the user about the cloud integration.
+**Still open in the audit (low severity, below CI's threshold):** KaTeX's "prototype pollution can bypass trust restrictions"; the fix is KaTeX 0.19, a breaking upgrade that rehype-katex, remark-math and Mermaid must accept first.
+
+**Next up:** typing in very large documents (900 KB) and a review of every screen (the user's request of 2026-11-17), more document design tools, then the plugin system (design awaiting the user's answer), then large documents, then remind the user about the cloud integration.

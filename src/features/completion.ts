@@ -1,4 +1,5 @@
 import { autocompletion, type Completion, type CompletionContext, type CompletionResult } from "@codemirror/autocomplete";
+import { slashCompletionSource } from "./slashMenu";
 import { syntaxTree } from "@codemirror/language";
 import type { EditorState, Extension } from "@codemirror/state";
 import GithubSlugger from "github-slugger";
@@ -248,5 +249,11 @@ export async function tagCompletionSource(ctx: CompletionContext): Promise<Compl
 }
 
 export function linkCompletion(): Extension {
-  return autocompletion({ override: [linkCompletionSource, wikiLinkCompletionSource, referenceCompletionSource, emojiCompletionSource, tagCompletionSource], icons: false, activateOnTyping: true });
+  return autocompletion({
+    override: [slashCompletionSource, linkCompletionSource, wikiLinkCompletionSource, referenceCompletionSource, emojiCompletionSource, tagCompletionSource],
+    icons: false,
+    activateOnTyping: true,
+    // The insert menu lists some thirty blocks in groups.
+    maxRenderedOptions: 60,
+  });
 }

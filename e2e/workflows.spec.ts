@@ -750,6 +750,44 @@ test("emoji shortcode completion inserts a shortcode the preview shows as emoji"
   await expect(page.locator(".markdown-body p")).toHaveText("Launch 🚀");
 });
 
+test("typing / on an empty line lists blocks to insert; a document style changes how the preview looks", async ({ page }) => {
+  await start(page);
+  await page.keyboard.press(`${mod}+N`);
+  await page.getByRole("textbox", { name: "Markdown editor" }).click();
+  await page.keyboard.type("# Plan");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  // The whole list, in groups; typing narrows it.
+  const menu = page.locator(".cm-tooltip-autocomplete");
+  await page.keyboard.type("/");
+  await expect(menu.getByRole("option", { name: /^Heading 1/ })).toBeVisible();
+  await expect(menu.getByRole("option", { name: /^Flowchart/ })).toBeAttached();
+  await page.keyboard.type("warn");
+  await expect(menu.getByRole("option")).toHaveCount(1);
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".cm-content")).toContainText("[!WARNING]");
+  await expect(page.locator(".cm-content")).not.toContainText("/warn");
+  await page.keyboard.type("Check the dates.");
+  await expect(page.locator(".markdown-body .markdown-alert-warning")).toContainText("Check the dates.");
+
+  // A slash in running text is just a slash.
+  await page.keyboard.press(`${mod}+End`);
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("either/or");
+  await expect(menu.getByRole("option")).toHaveCount(0);
+
+  // Document styles: Book sets serif type; Default takes it away again.
+  const title = page.locator(".markdown-body h1");
+  const family = () => title.evaluate((el) => getComputedStyle(el).fontFamily);
+  const before = await family();
+  await chooseMenu(page, "View", "Document Style", "Book");
+  await expect.poll(family).toMatch(/Georgia/);
+  await expect(title).toHaveCSS("text-align", "center");
+  await chooseMenu(page, "View", "Document Style", "Default");
+  await expect.poll(family).toBe(before);
+});
+
 test("Tab moves between table cells and adds a row at the end", async ({ page }) => {
   await start(page);
   await page.keyboard.press(`${mod}+N`);

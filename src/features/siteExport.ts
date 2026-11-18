@@ -1,6 +1,7 @@
 import { backend } from "../services";
 import { describeError } from "../services/errors";
 import { scopeCustomCss } from "../services/customCss";
+import { documentCss } from "../services/documentStyles";
 import { buildHtmlDocument, documentTitle } from "../services/exportHtml";
 import { basename, isInside, join, relativePath } from "../services/paths";
 import { useDocuments } from "../stores/documentsStore";
@@ -100,7 +101,7 @@ export interface BuiltSite {
 export async function buildSite(root: string, pages: SitePage[], onPage?: (done: number, total: number) => void): Promise<BuiltSite> {
   const s = useSettings.getState().settings;
   const features = { math: s.renderMath, diagrams: s.renderDiagrams };
-  const css = scopeCustomCss(s.customCss);
+  const css = scopeCustomCss(documentCss(s));
   const key = (p: string) => p.replace(/\\/g, "/").toLowerCase();
   const open = new Map(useDocuments.getState().docs.filter((d) => d.path).map((d) => [key(d.path!), d.content]));
   const loadImage = (path: string) => backend().readImage(path);

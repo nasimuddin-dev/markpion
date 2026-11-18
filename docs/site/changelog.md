@@ -7,17 +7,29 @@ description: Release notes for every Markpion version, listing what was added, c
 
 Every release of Markpion, newest first. Dates are the GitHub release dates (UTC). Installers for each version are on the [GitHub releases page](https://github.com/nasimuddin-dev/markpion/releases).
 
-## v0.28.1
+## v0.29.0
 
-Released: 2026-11-17 · [Release files](https://github.com/nasimuddin-dev/markpion/releases/tag/v0.28.1)
+Released: 2026-11-17 · [Release files](https://github.com/nasimuddin-dev/markpion/releases/tag/v0.29.0)
+
+### Added
+
+- **Insert menu:** type **/** on an empty line to pick what to insert from a list: headings, lists, a table, a code block, callouts, diagrams, a picture, a table of contents and more. Keep typing to narrow it (`/tab`, `/todo`, `/warn`) and press **Enter**. See [Writing tools](/guide/writing-tools#the-insert-menu-type).
+- **Document styles** (View → Document Style): **Book**, **Report** and **Compact** looks for the preview, printing, slides and HTML export, without writing CSS. Your custom CSS still applies on top. See [Settings](/guide/settings#preview).
+- **Insert Collapsible Section** (Format → Insert): a title the reader clicks to show what's inside (`<details>`).
 
 ### Changed
+
+- Completion lists in the editor (links, emoji, tags and the new insert menu) have the app's menu look, with more rows visible.
 
 - **Typing in long documents is faster.** The Outline no longer redraws every heading on each keystroke, the word count is quicker, and the formatting toolbar redraws only when the formatting at the cursor changes. In a 200 KB document a keystroke costs about half of what it did.
 - In documents over 50,000 characters, the Outline, the breadcrumbs and the status bar's word and task counts catch up a moment after you stop typing.
 - **Notifications stay long enough to read:** longer messages stay longer, a notification stays while the pointer is on it, and a repeated message shows once instead of stacking.
 - **Publish Folder to GitHub Pages** and **Export Folder as HTML Site** show a progress window (the page being built, then sending or writing).
 - The **Git** tab says "Pulling from…" or "Pushing to…" while a pull or push runs.
+
+### Security
+
+- Updated DOMPurify (the HTML sanitizer Mermaid diagrams use) to 3.4.18, which fixes two security advisories published for earlier versions, along with other dependencies' compatible updates.
 
 ### Fixed
 

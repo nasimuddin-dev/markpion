@@ -1,4 +1,5 @@
 import { applyPolicy, NO_POLICY, parsePolicy, withoutLocked } from "./policy";
+import { isDocumentStyle } from "../services/documentStyles";
 import { create } from "zustand";
 import type { Settings } from "../types";
 import { backend } from "../services";
@@ -26,6 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
   typewriterScrolling: false,
   dimOtherParagraphs: false,
   closeBrackets: false,
+  slashMenu: true,
   editorLineLength: 0,
   lintDisabledRules: [],
   spellCheck: true,
@@ -41,6 +43,7 @@ export const DEFAULT_SETTINGS: Settings = {
   newFileLineEnding: "lf",
   exportPageSize: "auto",
   customCss: "",
+  documentStyle: "default",
   pageBreakBeforeH1: false,
   imageFolder: "assets",
   askImageName: false,
@@ -128,6 +131,7 @@ export function sanitizeSettings(raw: unknown): Settings {
     typewriterScrolling: bool(s.typewriterScrolling, d.typewriterScrolling),
     dimOtherParagraphs: bool(s.dimOtherParagraphs, d.dimOtherParagraphs),
     closeBrackets: bool(s.closeBrackets, d.closeBrackets),
+    slashMenu: bool(s.slashMenu, d.slashMenu),
     editorLineLength: LINE_LENGTHS.includes(s.editorLineLength as number) ? (s.editorLineLength as number) : d.editorLineLength,
     lintDisabledRules: Array.isArray(s.lintDisabledRules)
       ? [...new Set(s.lintDisabledRules.filter((r): r is string => typeof r === "string" && /^[a-z0-9-]{1,40}$/.test(r)))].slice(0, 50)
@@ -148,6 +152,7 @@ export function sanitizeSettings(raw: unknown): Settings {
         : d.newFileLineEnding,
     exportPageSize: s.exportPageSize === "a4" || s.exportPageSize === "letter" || s.exportPageSize === "auto" ? s.exportPageSize : d.exportPageSize,
     customCss: typeof s.customCss === "string" ? s.customCss.slice(0, MAX_CUSTOM_CSS) : d.customCss,
+    documentStyle: isDocumentStyle(s.documentStyle) ? s.documentStyle : d.documentStyle,
     imageFolder: imageFolderName(s.imageFolder),
     askImageName: bool(s.askImageName, d.askImageName),
     pageBreakBeforeH1: bool(s.pageBreakBeforeH1, d.pageBreakBeforeH1),

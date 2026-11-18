@@ -7,6 +7,12 @@ description: Markpion's formatting commands, heading tools, move section, task l
 
 Everything here is in the **Format** menu (the **Table** menu for tables, the **File** menu for templates) and the command palette (**Ctrl+Shift+P**). On macOS, use **Cmd** for **Ctrl** and **Option** for **Alt**.
 
+## The insert menu: type /
+
+On an empty line, type **/** to list the blocks a document is built from: headings, lists, a table, a code block, callouts, diagrams, a picture, a table of contents and more. Keep typing to narrow the list (`/tab` for a table, `/todo` for a task list, `/warn` for a warning callout), move with the arrow keys and press **Enter**. The `/…` you typed is replaced by the block, exactly as the matching **Format** menu command would insert it. **Esc** closes the list and leaves the slash.
+
+The menu opens only for a slash that starts an otherwise empty line, so a slash in a sentence, a path or a code block is just a slash. To turn it off, clear **Settings → Editor → Show the insert menu when typing / on an empty line**.
+
 ## Text formatting
 
 Select text and apply a format, or apply it with nothing selected to insert the markers and type inside them. Applying the same format again removes it.
@@ -79,6 +85,7 @@ The list commands work on all selected lines, and applying one again removes it.
 - **Insert Math Block** puts `$$` lines around the selection (or an empty formula), and **Inline Math** wraps the selection in `$…$`. See [Math](/markdown/math).
 - **Insert Flowchart**, **Sequence Diagram**, **Gantt Chart** or **Pie Chart (Mermaid)** inserts a small working diagram to edit, with its first line selected. See [Mermaid diagrams](/markdown/mermaid).
 - **Horizontal Rule** inserts `---`.
+- **Insert Collapsible Section** (Format → Insert) inserts a `<details>` block: a title the reader clicks to show what's inside. The selected text becomes its content, and the title is selected for you to type over. It works in the preview, in HTML export and on GitHub.
 - **Toggle Comment** (**Ctrl+/**) wraps the selected lines, or the cursor's line, in an HTML comment (`<!-- … -->`): the text stays in the file but doesn't appear in the preview or in exports. Press it again to remove the comment.
 - **Insert Footnote** (**Ctrl+Alt+R**) inserts the next numbered reference, such as `[^1]`, at the cursor and adds its definition at the end of the document, where the cursor moves so you can type the note. See [Footnotes](/markdown/extras#footnotes).
 

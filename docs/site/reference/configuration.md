@@ -34,6 +34,7 @@ Settings are saved as JSON. Unknown keys are ignored and invalid values fall bac
 | `lintMarkdown` | `true` | |
 | `typewriterScrolling` | `false` | Keep the line being typed in the middle of the editor |
 | `closeBrackets` | `false` | Type the closing `)`, `]`, `}` or `` ` `` along with the opening one |
+| `slashMenu` | `true` | Typing `/` on an empty line lists the blocks to insert (headings, lists, a table, callouts, code, diagrams…) |
 | `dimOtherParagraphs` | `false` | Dim every paragraph except the one with the cursor |
 | `formatTablesOnSave` | `false` | Align every table when saving, as Format Table does |
 | `explorerShowImages` | `true` | List pictures in the Explorer besides Markdown files |
@@ -60,6 +61,7 @@ Settings are saved as JSON. Unknown keys are ignored and invalid values fall bac
 | `updateTocOnSave` | `true` | |
 | `newFileLineEnding` | `"lf"` | `"lf"`, `"crlf"`, `"auto"` |
 | `exportPageSize` | `"auto"` | `"auto"`, `"a4"`, `"letter"` |
+| `documentStyle` | `"default"` | The look of rendered documents: `"default"`, `"book"`, `"report"` or `"compact"`; applied before `customCss` |
 | `customCss` | `""` | CSS for rendered documents (preview, print, slides, HTML export), up to 100,000 characters; scoped to the document |
 | `restoreSession` | `true` | |
 | `checkForUpdates` | `true` | |

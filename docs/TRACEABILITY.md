@@ -1,6 +1,6 @@
 # Requirements Traceability
 
-Status of each [SRS](SRS.md) requirement as of version 0.28.1. **Done** means implemented and tested (automated or manual). **Partial** means some of it is implemented and the gap is noted. **Planned** means it's scheduled for the release named in the SRS.
+Status of each [SRS](SRS.md) requirement as of version 0.29.0. **Done** means implemented and tested (automated or manual). **Partial** means some of it is implemented and the gap is noted. **Planned** means it's scheduled for the release named in the SRS.
 
 ## Functional requirements
 
@@ -93,6 +93,8 @@ Status of each [SRS](SRS.md) requirement as of version 0.28.1. **Done** means im
 | Menus from one model: submenus (one level, keyboard: →/← open and close), check marks for on/off commands (`Command.checked`), the same menus in the macOS menu bar, and each command's menu location in the command palette; tests keep every menu short and every item pointing at a real command | `src/features/menus.ts`, `src/components/MenuBar.tsx`, `src/features/nativeMenu.ts`, `src-tauri/src/menu.rs`, `tests/menus.test.tsx` | NFR usability, §12 UI |
 | Upgrade from Markdown Studio (the old name): settings, recent files, recovery and history are copied from the old `com.markdownstudio.app` folder on first start, and the Windows installer silently removes the old install and recreates the Start menu and desktop shortcuts it took with it (once; installs already updated to 0.14.0 are repaired by the next update) | `src-tauri/src/storage.rs` (`migrate_legacy_dir`), `src-tauri/windows/hooks.nsh` (`NSIS_HOOK_PREINSTALL`, `MS_RESTORE_SHORTCUTS`) | §13 upgrade, FR-062 |
 | Custom CSS for documents: applied to the preview, print, slides, HTML and HTML-site export; parsed by the browser and rebuilt with every selector under `.markdown-body` (stray braces can't escape; `@import` and unknown at-rules dropped; `</` escaped in exports); managed settings can preset or lock it | `services/customCss.ts`, `components/CustomDocumentCss.tsx`, `services/exportHtml.ts` | §10 customization, §11 security |
+| Insert menu: "/" at the start of an otherwise empty line (at most three spaces before it; not in code, front matter or HTML blocks) lists 29 blocks in groups, filtered by label and by other words for each ("todo" finds Task List); choosing one removes the typed text and runs the same command as the Format menu; `slashMenu` setting (on by default). Insert Collapsible Section (`<details>` around the selection) | `features/slashMenu.ts` (a CodeMirror completion source), `features/formatting.ts` (`insertCollapsible`); unit tests and an e2e flow | NFR usability |
+| Document styles (View → Document Style, Settings → Preview): Default, Book, Report and Compact, as built-in document CSS (type and spacing only, no colours) put before the custom CSS and scoped the same way, so they apply to the preview, print, slides, HTML, HTML-site and EPUB export, and not to PDF or Word export; `documentStyle` setting | `services/documentStyles.ts`, `components/CustomDocumentCss.tsx`, `features/exporting.ts`, `features/siteExport.ts`; unit tests and an e2e flow | NFR usability |
 | Export and import settings and shortcuts as `markpion-settings.json` (validated; session and AI consent excluded; managed settings kept) | `features/settingsTransfer.ts`, `SettingsDialog.tsx`, Rust `export_file`/`pick_import_file` json kind | FR-060 settings |
 | Customizable keyboard shortcuts: change, remove or reset any command's shortcut (conflicts detected), applied live to menus, the global handler and the editor keymap | `features/commands.ts` (`applyKeybindings`, `commandWithShortcut`), `components/ShortcutsDialog.tsx`, `Editor.tsx` (keymap compartment), settings `keybindings` | §14 keyboard shortcuts |
 | Windows High Contrast / forced colours: states shown by colour or shadow get outlines and borders in system colours (selection, active tab, focus, editor selection, unsaved dots); e2e test checks outlines and runs axe in forced colours | `styles/app.css` (`@media (forced-colors: active)`), `e2e/accessibility.spec.ts` | §15 accessibility |
@@ -165,10 +167,10 @@ Status of each [SRS](SRS.md) requirement as of version 0.28.1. **Done** means im
 
 ## Test coverage
 
-| Level | Where | Count (0.28.1) |
+| Level | Where | Count (0.29.0) |
 | --- | --- | --- |
-| Unit and component | `tests/` (Vitest, Testing Library, jsdom) | 699 tests in 125 files |
-| End-to-end and accessibility | `e2e/` (Playwright; axe-core WCAG 2.1 AA audits in light and dark themes) | 146 tests (including 24 layout checks at three window sizes and an epub.js reading test) |
+| Unit and component | `tests/` (Vitest, Testing Library, jsdom) | 708 tests in 127 files |
+| End-to-end and accessibility | `e2e/` (Playwright; axe-core WCAG 2.1 AA audits in light and dark themes) | 147 tests (including 24 layout checks at three window sizes and an epub.js reading test) |
 | Rust | `#[cfg(test)]` modules in `src-tauri/src/` | 63 tests (plus 1 ignored live API test) |
 | Native end-to-end (Windows, Linux) | `e2e-native/` (tauri-driver, `npm run test:native`); Windows locally, Linux in CI (WebKitWebDriver under `xvfb-run`) | 7 tests |
 | Visual regression (local) | `e2e-shots/visual.spec.ts` (Playwright, pixel-exact against a local baseline; not in CI because the pixels depend on the OS fonts) | 32 screens in 6 tests |

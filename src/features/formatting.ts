@@ -378,6 +378,17 @@ export const insertTable = insertTableOf(2, 1);
 
 export const insertHorizontalRule = insertBlock(() => ({ text: "---", cursorOffset: 4 }));
 
+/**
+ * A section the reader opens with a click (`<details>`): the selected text
+ * becomes its content, and the title is selected to type over. The blank lines
+ * let Markdown inside it render.
+ */
+export const insertCollapsible = insertBlock((selected) => {
+  const title = "Details";
+  const body = selected.replace(/\n+$/, "") || "Hidden until the reader opens it.";
+  return { text: `<details>\n<summary>${title}</summary>\n\n${body}\n\n</details>`, cursorOffset: "<details>\n<summary>".length, selectLength: title.length };
+});
+
 /** Runs a command against a plain state (used by tests). */
 export function applyCommand(state: EditorState, command: StateCommand): EditorState {
   let next = state;

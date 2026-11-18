@@ -141,17 +141,17 @@ FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 ```
 
-## JavaScript packages (382)
+## JavaScript packages (383)
 
 | Package | Version | License |
 | --- | --- | --- |
 | @antfu/install-pkg | 2.1.0 | MIT |
 | @braintree/sanitize-url | 7.1.2 | MIT |
-| @chevrotain/cst-dts-gen | 11.1.2 | Apache-2.0 |
-| @chevrotain/gast | 11.1.2 | Apache-2.0 |
-| @chevrotain/regexp-to-ast | 11.1.2 | Apache-2.0 |
-| @chevrotain/types | 11.1.2 | Apache-2.0 |
-| @chevrotain/utils | 11.1.2 | Apache-2.0 |
+| @chevrotain/cst-dts-gen | 13.2.0 | Apache-2.0 |
+| @chevrotain/gast | 13.2.0 | Apache-2.0 |
+| @chevrotain/regexp-to-ast | 13.2.0 | Apache-2.0 |
+| @chevrotain/types | 13.2.0 | Apache-2.0 |
+| @chevrotain/utils | 13.2.0 | Apache-2.0 |
 | @codemirror/autocomplete | 6.20.3 | MIT |
 | @codemirror/commands | 6.11.1 | MIT |
 | @codemirror/lang-angular | 0.1.4 | MIT |
@@ -202,7 +202,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 | @lezer/xml | 1.0.6 | MIT |
 | @lezer/yaml | 1.0.4 | MIT |
 | @marijn/find-cluster-break | 1.0.4 | MIT |
-| @mermaid-js/parser | 2.0.0 | MIT |
+| @mermaid-js/parser | 2.0.1 | MIT |
 | @mixmark-io/domino | 2.2.0 | BSD-2-Clause |
 | @napi-rs/canvas | 1.0.9 | MIT |
 | @noble/ciphers | 1.3.0 | MIT |
@@ -269,12 +269,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 | character-entities-html4 | 2.1.0 | MIT |
 | character-entities-legacy | 3.0.0 | MIT |
 | character-reference-invalid | 2.0.1 | MIT |
-| chevrotain | 11.1.2 | Apache-2.0 |
+| chevrotain | 13.2.0 | Apache-2.0 |
 | clone | 2.1.2 | MIT |
 | comma-separated-tokens | 2.0.3 | MIT |
 | commander | 7.2.0 | MIT |
 | commander | 8.3.0 | MIT |
 | commander | 13.1.0 | MIT |
+| commander | 15.1.0 | MIT |
 | core-util-is | 1.0.3 | MIT |
 | cose-base | 1.0.3 | MIT |
 | cose-base | 2.2.0 | MIT |
@@ -328,9 +329,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 | dfa | 1.2.0 | MIT |
 | dingbat-to-unicode | 1.0.2 | BSD-2-Clause |
 | docx | 9.7.2 | MIT |
-| dompurify | 3.4.16 | (MPL-2.0 OR Apache-2.0) |
+| dompurify | 3.4.18 | (MPL-2.0 OR Apache-2.0) |
 | duck | 0.1.12 | BSD |
-| elkjs | 0.9.3 | EPL-2.0 |
+| elkjs | 0.12.1 | EPL-2.0 OR GPL-3.0-or-later |
 | entities | 6.0.1 | BSD-2-Clause |
 | es-toolkit | 1.52.0 | MIT |
 | escape-string-regexp | 5.0.0 | MIT |
@@ -378,6 +379,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 | js-md5 | 0.8.3 | MIT |
 | jszip | 3.10.2 | (MIT OR GPL-3.0-or-later) |
 | katex | 0.16.47 | MIT |
+| katex | 0.18.10 | MIT |
 | khroma | 2.1.0 | not stated |
 | layout-base | 1.0.2 | MIT |
 | layout-base | 2.0.1 | MIT |
@@ -407,7 +409,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 | mdast-util-to-hast | 13.2.1 | MIT |
 | mdast-util-to-markdown | 2.1.2 | MIT |
 | mdast-util-to-string | 4.0.0 | MIT |
-| mermaid | 12.0.0 | MIT |
+| mermaid | 12.3.0 | MIT |
 | mhchemparser | 4.2.1 | Apache-2.0 |
 | micromark | 4.0.2 | MIT |
 | micromark-core-commonmark | 2.0.3 | MIT |
@@ -514,7 +516,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 | unist-util-visit | 5.1.0 | MIT |
 | unist-util-visit-parents | 6.0.2 | MIT |
 | util-deprecate | 1.0.2 | MIT |
-| uuid | 14.0.2 | MIT |
 | vfile | 6.0.3 | MIT |
 | vfile-location | 5.0.3 | MIT |
 | vfile-message | 4.0.3 | MIT |
@@ -1111,7 +1112,7 @@ SOFTWARE.
 
 ### Text 3
 
-Used by: @chevrotain/cst-dts-gen 11.1.2, @chevrotain/gast 11.1.2, @chevrotain/regexp-to-ast 11.1.2, @chevrotain/types 11.1.2, @chevrotain/utils 11.1.2, chevrotain 11.1.2, dompurify 3.4.16, mathjax-full 3.2.1, arbitrary 1.4.2, async-channel 2.5.0, async-executor 1.14.0, async-io 2.6.0, async-lock 3.4.2, async-process 2.5.0, async-recursion 1.1.1, async-signal 0.2.14, async-task 4.7.1, atomic-waker 1.1.2, base64 0.21.7, base64 0.22.1, base64 0.23.1, bit-set 0.8.0, bit-vec 0.8.0, bitflags 1.3.2, bitflags 2.13.2, block-buffer 0.10.4, blocking 1.7.0, bs58 0.5.1, bumpalo 3.20.3, bytemuck 1.25.2, camino 1.2.6, cfg-if 1.0.5, concurrent-queue 2.5.0, core-foundation 0.9.4, core-foundation 0.10.1, core-foundation-sys 0.8.7, core-graphics 0.25.0, core-graphics-types 0.2.0, cpufeatures 0.2.17, crossbeam-channel 0.5.17, crossbeam-utils 0.8.23, crypto-common 0.1.7, defmt 1.1.1, defmt-macros 1.1.1, derive_arbitrary 1.4.2, digest 0.10.7, displaydoc 0.2.7, embed_plist 1.2.2, equivalent 1.0.2, errno 0.3.14, event-listener 5.4.2, event-listener-strategy 0.5.4, fastrand 2.5.0, filetime 0.2.29, flate2 1.1.10, fnv 1.0.7, form_urlencoded 1.2.2, futures-lite 2.6.1, glob 0.3.4, hashbrown 0.12.3, hashbrown 0.17.1, heck 0.4.1, heck 0.5.0, hermit-abi 0.5.3, html5ever 0.38.0, httparse 1.10.1, hyper-rustls 0.27.10, idna 1.1.0, idna_adapter 1.2.2, indexmap 1.9.3, indexmap 2.14.2, jni 0.21.1, js-sys 0.3.105, keyboard-types 0.7.0, libappindicator 0.9.0, linux-raw-sys 0.12.1, lock_api 0.4.14, log 0.4.34, markup5ever 0.38.0, mime 0.3.17, muda 0.19.3, num-traits 0.2.19, once_cell 1.21.4, openssl-probe 0.2.1, ordered-stream 0.2.0, parking 2.2.1, parking_lot 0.12.5, parking_lot_core 0.9.12, percent-encoding 2.3.2, piper 0.2.5, png 0.17.16, png 0.18.1, polling 3.11.0, regex 1.13.1, regex-automata 0.4.18, regex-syntax 0.8.11, rustix 1.1.5, rustls 0.23.45, rustls-native-certs 0.8.4, rustls-platform-verifier 0.7.1, scopeguard 1.2.0, security-framework 2.11.1, security-framework 3.7.0, security-framework-sys 2.17.0, serde_with 3.23.0, serde_with_macros 3.23.0, serialize-to-javascript 0.1.2, serialize-to-javascript-impl 0.1.2, servo_arc 0.4.3, sha2 0.10.9, signal-hook-registry 1.4.8, simd_cesu8 1.2.0, smallvec 1.16.1, socket2 0.6.5, stable_deref_trait 1.2.1, string_cache 0.9.0, syn 1.0.109, system-configuration 0.7.0, system-configuration-sys 0.6.0, tao-macros 0.1.4, tar 0.4.46, tempfile 3.27.0, tendril 0.5.1, tinyvec 1.13.3, toml_datetime 0.6.3, tray-icon 0.24.2, unicode-segmentation 1.13.3, url 2.5.8, utf8_iter 1.0.4, uuid 1.26.1, wasi 0.11.1+wasi-snapshot-preview1, wasip2 1.0.4+wasi-0.2.12, wasm-bindgen 0.2.128, wasm-bindgen-futures 0.4.78, wasm-bindgen-macro 0.2.128, wasm-bindgen-macro-support 0.2.128, wasm-bindgen-shared 0.2.128, web_atoms 0.2.6, web-sys 0.3.105, window-vibrancy 0.6.0, wit-bindgen 0.57.1, wry 0.55.1, xattr 1.6.1, zeroize 1.9.0
+Used by: @chevrotain/cst-dts-gen 13.2.0, @chevrotain/gast 13.2.0, @chevrotain/regexp-to-ast 13.2.0, @chevrotain/types 13.2.0, @chevrotain/utils 13.2.0, chevrotain 13.2.0, dompurify 3.4.18, mathjax-full 3.2.1, arbitrary 1.4.2, async-channel 2.5.0, async-executor 1.14.0, async-io 2.6.0, async-lock 3.4.2, async-process 2.5.0, async-recursion 1.1.1, async-signal 0.2.14, async-task 4.7.1, atomic-waker 1.1.2, base64 0.21.7, base64 0.22.1, base64 0.23.1, bit-set 0.8.0, bit-vec 0.8.0, bitflags 1.3.2, bitflags 2.13.2, block-buffer 0.10.4, blocking 1.7.0, bs58 0.5.1, bumpalo 3.20.3, bytemuck 1.25.2, camino 1.2.6, cfg-if 1.0.5, concurrent-queue 2.5.0, core-foundation 0.9.4, core-foundation 0.10.1, core-foundation-sys 0.8.7, core-graphics 0.25.0, core-graphics-types 0.2.0, cpufeatures 0.2.17, crossbeam-channel 0.5.17, crossbeam-utils 0.8.23, crypto-common 0.1.7, defmt 1.1.1, defmt-macros 1.1.1, derive_arbitrary 1.4.2, digest 0.10.7, displaydoc 0.2.7, embed_plist 1.2.2, equivalent 1.0.2, errno 0.3.14, event-listener 5.4.2, event-listener-strategy 0.5.4, fastrand 2.5.0, filetime 0.2.29, flate2 1.1.10, fnv 1.0.7, form_urlencoded 1.2.2, futures-lite 2.6.1, glob 0.3.4, hashbrown 0.12.3, hashbrown 0.17.1, heck 0.4.1, heck 0.5.0, hermit-abi 0.5.3, html5ever 0.38.0, httparse 1.10.1, hyper-rustls 0.27.10, idna 1.1.0, idna_adapter 1.2.2, indexmap 1.9.3, indexmap 2.14.2, jni 0.21.1, js-sys 0.3.105, keyboard-types 0.7.0, libappindicator 0.9.0, linux-raw-sys 0.12.1, lock_api 0.4.14, log 0.4.34, markup5ever 0.38.0, mime 0.3.17, muda 0.19.3, num-traits 0.2.19, once_cell 1.21.4, openssl-probe 0.2.1, ordered-stream 0.2.0, parking 2.2.1, parking_lot 0.12.5, parking_lot_core 0.9.12, percent-encoding 2.3.2, piper 0.2.5, png 0.17.16, png 0.18.1, polling 3.11.0, regex 1.13.1, regex-automata 0.4.18, regex-syntax 0.8.11, rustix 1.1.5, rustls 0.23.45, rustls-native-certs 0.8.4, rustls-platform-verifier 0.7.1, scopeguard 1.2.0, security-framework 2.11.1, security-framework 3.7.0, security-framework-sys 2.17.0, serde_with 3.23.0, serde_with_macros 3.23.0, serialize-to-javascript 0.1.2, serialize-to-javascript-impl 0.1.2, servo_arc 0.4.3, sha2 0.10.9, signal-hook-registry 1.4.8, simd_cesu8 1.2.0, smallvec 1.16.1, socket2 0.6.5, stable_deref_trait 1.2.1, string_cache 0.9.0, syn 1.0.109, system-configuration 0.7.0, system-configuration-sys 0.6.0, tao-macros 0.1.4, tar 0.4.46, tempfile 3.27.0, tendril 0.5.1, tinyvec 1.13.3, toml_datetime 0.6.3, tray-icon 0.24.2, unicode-segmentation 1.13.3, url 2.5.8, utf8_iter 1.0.4, uuid 1.26.1, wasi 0.11.1+wasi-snapshot-preview1, wasip2 1.0.4+wasi-0.2.12, wasm-bindgen 0.2.128, wasm-bindgen-futures 0.4.78, wasm-bindgen-macro 0.2.128, wasm-bindgen-macro-support 0.2.128, wasm-bindgen-shared 0.2.128, web_atoms 0.2.6, web-sys 0.3.105, window-vibrancy 0.6.0, wit-bindgen 0.57.1, wry 0.55.1, xattr 1.6.1, zeroize 1.9.0
 
 ```text
 Apache License
@@ -1627,7 +1628,7 @@ THE SOFTWARE.
 
 ### Text 15
 
-Used by: @mermaid-js/parser 2.0.0
+Used by: @mermaid-js/parser 2.0.1
 
 ```text
 The MIT License (MIT)
@@ -3866,7 +3867,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### Text 62
 
-Used by: commander 7.2.0, commander 8.3.0, commander 13.1.0
+Used by: commander 7.2.0, commander 8.3.0, commander 13.1.0, commander 15.1.0
 
 ```text
 (The MIT License)
@@ -6624,7 +6625,7 @@ developed by Chen Jiaju, licensed under the MIT License and the Apache License 2
 
 ### Text 115
 
-Used by: dompurify 3.4.16, cssparser 0.36.0, cssparser-macros 0.6.1, dtoa-short 0.3.5
+Used by: dompurify 3.4.18, cssparser 0.36.0, cssparser-macros 0.6.1, dtoa-short 0.3.5
 
 ```text
 Mozilla Public License Version 2.0
@@ -7219,7 +7220,7 @@ express Statement of Purpose.
 
 ### Text 119
 
-Used by: elkjs 0.9.3
+Used by: elkjs 0.12.1
 
 ```text
 # Eclipse Public License - v 2.0
@@ -7474,8 +7475,7 @@ No third-party beneficiary rights are created under this Agreement.
 
 “This Source Code may also be made available under the following
 Secondary Licenses when the conditions for such availability set forth
-in the Eclipse Public License, v. 2.0 are satisfied: {name license(s),
-version(s), and exceptions or additional permissions here}.”
+in the Eclipse Public License, v. 2.0 are satisfied: GNU General Public License v3.0 or later”
 
 > Simply including a copy of this Agreement, including this Exhibit A is
 > not sufficient to license the Source Code under Secondary Licenses.
@@ -11570,7 +11570,7 @@ copy of the Program in return for a fee.
 
 ### Text 198
 
-Used by: katex 0.16.47
+Used by: katex 0.16.47, katex 0.18.10
 
 ```text
 The MIT License (MIT)
@@ -12543,7 +12543,7 @@ SOFTWARE.
 
 ### Text 218
 
-Used by: mermaid 12.0.0
+Used by: mermaid 12.3.0
 
 ```text
 The MIT License (MIT)
@@ -18944,22 +18944,6 @@ DEALINGS IN THE SOFTWARE.
 
 ### Text 359
 
-Used by: uuid 14.0.2
-
-```text
-The MIT License (MIT)
-
-Copyright (c) 2010-2020 Robert Kieffer and other contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-```
-
-### Text 360
-
 Used by: w3c-keyname 2.2.8
 
 ```text
@@ -18984,7 +18968,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Text 361
+### Text 360
 
 Used by: want 0.3.1
 
@@ -19010,7 +18994,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Text 362
+### Text 361
 
 Used by: webkit2gtk 2.0.2
 
@@ -19037,7 +19021,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Text 363
+### Text 362
 
 Used by: webkit2gtk-sys 2.0.2
 
@@ -19062,7 +19046,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Text 364
+### Text 363
 
 Used by: webpki-root-certs 1.0.9
 
@@ -19130,7 +19114,7 @@ of Data, including for example machine learning models and models'
 insights.
 ```
 
-### Text 365
+### Text 364
 
 Used by: wicked-good-xpath 1.3.0
 
@@ -19159,7 +19143,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Text 366
+### Text 365
 
 Used by: winapi 0.3.9
 
@@ -19185,7 +19169,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Text 367
+### Text 366
 
 Used by: window-vibrancy 0.6.0
 
@@ -19213,7 +19197,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Text 368
+### Text 367
 
 Used by: window-vibrancy 0.6.0
 
@@ -19239,7 +19223,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/window-vibrancy.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Text 369
+### Text 368
 
 Used by: windows 0.61.3, windows 0.62.2, windows_aarch64_gnullvm 0.42.2, windows_aarch64_gnullvm 0.52.6, windows_aarch64_gnullvm 0.53.1, windows_aarch64_msvc 0.42.2, windows_aarch64_msvc 0.52.6, windows_aarch64_msvc 0.53.1, windows_i686_gnu 0.42.2, windows_i686_gnu 0.52.6, windows_i686_gnu 0.53.1, windows_i686_gnullvm 0.52.6, windows_i686_gnullvm 0.53.1, windows_i686_msvc 0.42.2, windows_i686_msvc 0.52.6, windows_i686_msvc 0.53.1, windows_x86_64_gnu 0.42.2, windows_x86_64_gnu 0.52.6, windows_x86_64_gnu 0.53.1, windows_x86_64_gnullvm 0.42.2, windows_x86_64_gnullvm 0.52.6, windows_x86_64_gnullvm 0.53.1, windows_x86_64_msvc 0.42.2, windows_x86_64_msvc 0.52.6, windows_x86_64_msvc 0.53.1, windows-collections 0.2.0, windows-collections 0.3.2, windows-core 0.61.2, windows-core 0.62.2, windows-future 0.2.1, windows-future 0.3.2, windows-implement 0.60.2, windows-interface 0.59.3, windows-link 0.1.3, windows-link 0.2.1, windows-numerics 0.2.0, windows-numerics 0.3.1, windows-registry 0.6.1, windows-result 0.3.4, windows-result 0.4.1, windows-strings 0.4.2, windows-strings 0.5.1, windows-sys 0.45.0, windows-sys 0.52.0, windows-sys 0.59.0, windows-sys 0.60.2, windows-sys 0.61.2, windows-targets 0.42.2, windows-targets 0.52.6, windows-targets 0.53.5, windows-threading 0.1.0, windows-threading 0.2.1, windows-version 0.1.7
 
@@ -19447,7 +19431,7 @@ Apache License
    limitations under the License.
 ```
 
-### Text 370
+### Text 369
 
 Used by: wry 0.55.1
 
@@ -19475,7 +19459,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Text 371
+### Text 370
 
 Used by: wry 0.55.1
 
@@ -19502,7 +19486,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/wry.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Text 372
+### Text 371
 
 Used by: xml 1.0.1
 
@@ -19531,7 +19515,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Text 373
+### Text 372
 
 Used by: xml-js 1.6.11
 
@@ -19559,7 +19543,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Text 374
+### Text 373
 
 Used by: xmlbuilder 10.1.1
 
@@ -19587,7 +19571,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Text 375
+### Text 374
 
 Used by: xmldoc 2.0.3
 
@@ -19617,7 +19601,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Text 376
+### Text 375
 
 Used by: zbus 5.19.0, zbus_macros 5.19.0, zbus_names 4.3.4, zvariant 5.15.0, zvariant_derive 5.15.0
 
@@ -19649,7 +19633,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Text 377
+### Text 376
 
 Used by: zcheapstr 1.1.0
 
@@ -19681,7 +19665,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Text 378
+### Text 377
 
 Used by: zeroize 1.9.0
 
@@ -19713,7 +19697,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Text 379
+### Text 378
 
 Used by: zip 4.6.1
 
@@ -19744,7 +19728,7 @@ Some files in the "tests/data" subdirectory of this repository are under other
 licences; see files named LICENSE.*.txt for details.
 ```
 
-### Text 380
+### Text 379
 
 Used by: zlib-rs 0.6.8
 
@@ -19770,7 +19754,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### Text 381
+### Text 380
 
 Used by: zustand 5.0.15
 

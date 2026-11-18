@@ -140,6 +140,8 @@ export interface Settings {
   dimOtherParagraphs: boolean;
   /** Type the closing ), ], } or ` along with the opening one. */
   closeBrackets: boolean;
+  /** Typing "/" on an empty line lists the blocks to insert. */
+  slashMenu: boolean;
   /** Editor text width in characters, centered (0 = the full width of the pane). */
   editorLineLength: number;
   /** Lint checks (rule ids) turned off with "Don't Show This Check". */
@@ -160,6 +162,8 @@ export interface Settings {
   exportPageSize: "auto" | "a4" | "letter";
   /** Extra CSS for rendered documents (preview, print, slides, HTML export), scoped to the document. */
   customCss: string;
+  /** A ready-made look for rendered documents, applied before `customCss`. */
+  documentStyle: "default" | "book" | "report" | "compact";
   /** PDF, Word and printing: each top-level heading after the first starts a new page. */
   pageBreakBeforeH1: boolean;
   /** Folder (one name, next to the document) for pasted, dropped and inserted images. */

@@ -1,4 +1,5 @@
 import { backend } from "../../services";
+import { DOCUMENT_STYLES, type DocumentStyle } from "../../services/documentStyles";
 import { activeDoc } from "../../stores/documentsStore";
 import { useSettings } from "../../stores/settingsStore";
 import { useUi } from "../../stores/uiStore";
@@ -139,6 +140,17 @@ export const viewCommands: Record<string, Command> = {
       update({ showToolbar: !settings.showToolbar });
     },
   },
+  ...Object.fromEntries(
+    (Object.keys(DOCUMENT_STYLES) as DocumentStyle[]).map((style): [string, Command] => {
+      const id = `documentStyle${style[0].toUpperCase()}${style.slice(1)}`;
+      return [id, {
+        id,
+        label: `Document Style: ${DOCUMENT_STYLES[style].label}`,
+        run: () => useSettings.getState().update({ documentStyle: style }),
+        checked: () => useSettings.getState().settings.documentStyle === style,
+      }];
+    }),
+  ),
   toggleBreadcrumbs: {
     id: "toggleBreadcrumbs",
     label: "Toggle Breadcrumbs",

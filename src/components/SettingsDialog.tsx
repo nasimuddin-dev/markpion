@@ -8,6 +8,7 @@ import { Modal } from "./Dialogs";
 import { refreshWorkspace } from "../features/workspace";
 import { backend } from "../services";
 import type { AppInfo, Settings } from "../types";
+import { DOCUMENT_STYLES } from "../services/documentStyles";
 
 /** Settings screen (FR-025, FR-060, FR-061). Changes apply and persist immediately. */
 export function SettingsDialog() {
@@ -67,6 +68,7 @@ export function SettingsDialog() {
           <label className="check"><input type="checkbox" checked={settings.typewriterScrolling} disabled={isLocked("typewriterScrolling")} onChange={(e) => update({ typewriterScrolling: e.target.checked })} /> Typewriter scrolling (keep the line you're typing in the middle)</label>
           <label className="check"><input type="checkbox" checked={settings.dimOtherParagraphs} disabled={isLocked("dimOtherParagraphs")} onChange={(e) => update({ dimOtherParagraphs: e.target.checked })} /> Dim other paragraphs (highlight the one you're writing)</label>
           <label className="check"><input type="checkbox" checked={settings.closeBrackets} disabled={isLocked("closeBrackets")} onChange={(e) => update({ closeBrackets: e.target.checked })} /> Close brackets and backticks automatically</label>
+          <label className="check"><input type="checkbox" checked={settings.slashMenu} disabled={isLocked("slashMenu")} onChange={(e) => update({ slashMenu: e.target.checked })} /> Show the insert menu when typing / on an empty line</label>
           <label className="check"><input type="checkbox" checked={settings.lintMarkdown} disabled={isLocked("lintMarkdown")} onChange={(e) => update({ lintMarkdown: e.target.checked })} /> Check Markdown for problems (broken links, headings, tables, alt text)</label>
           {settings.lintDisabledRules.length > 0 && (
             <div className="hidden-checks">
@@ -152,6 +154,13 @@ export function SettingsDialog() {
           <label className="check"><input type="checkbox" checked={settings.renderDiagrams} disabled={isLocked("renderDiagrams")} onChange={(e) => update({ renderDiagrams: e.target.checked })} /> Render Mermaid diagrams</label>
           <label className="check"><input type="checkbox" checked={settings.previewRemoteImages} disabled={isLocked("previewRemoteImages")} onChange={(e) => update({ previewRemoteImages: e.target.checked })} /> Show pictures from the web in the preview (off: no request leaves the computer; exports keep the links)</label>
           <label className="check"><input type="checkbox" checked={settings.syncScroll} disabled={isLocked("syncScroll")} onChange={(e) => update({ syncScroll: e.target.checked })} /> Sync editor and preview scrolling</label>
+          <label htmlFor="setting-documentStyle">Document style</label>
+          <select {...field("documentStyle")} aria-describedby="setting-documentStyle-hint" onChange={(e) => update({ documentStyle: e.target.value as Settings["documentStyle"] })}>
+            {(Object.keys(DOCUMENT_STYLES) as Array<Settings["documentStyle"]>).map((style) => (
+              <option key={style} value={style}>{DOCUMENT_STYLES[style].label}</option>
+            ))}
+          </select>
+          <p className="muted small" id="setting-documentStyle-hint">{DOCUMENT_STYLES[settings.documentStyle].description}. Also in View → Document Style.</p>
           <label htmlFor="setting-customCss">Custom CSS for documents</label>
           <textarea
             className="text-input code-input" rows={5} spellCheck={false} placeholder="h1 { color: #0b4f8a; }"
@@ -159,7 +168,7 @@ export function SettingsDialog() {
             onChange={(e) => update({ customCss: e.target.value })}
           />
           <p className="muted small" id="setting-customCss-hint">
-            Styles the preview, printing, slides and HTML export (not PDF or Word export). Rules apply only inside the document; <code>body</code> means the whole document.
+            Applied after the document style. Both style the preview, printing, slides and HTML export (not PDF or Word export). Rules apply only inside the document; <code>body</code> means the whole document.
           </p>
         </section>
 

@@ -87,4 +87,5 @@ export const formatCommands: Record<string, Command> = {
   removeHeadingNumbers: formatCommand("removeHeadingNumbers", "Remove Heading Numbers", removeHeadingNumbersCommand),
   toc: formatCommand("toc", "Insert / Update Table of Contents", insertOrUpdateToc),
   horizontalRule: formatCommand("horizontalRule", "Horizontal Rule", fmt.insertHorizontalRule),
+  collapsible: formatCommand("collapsible", "Insert Collapsible Section", fmt.insertCollapsible),
 };

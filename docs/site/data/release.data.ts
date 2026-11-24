@@ -55,7 +55,7 @@ export default {
       releaseUrl: `${REPO}/releases/tag/v${version}`,
       windows: [
         make("Standard installer (x64)", `Markpion-${version}-windows-x64-setup.exe`, "Recommended. Adds WebView2 automatically if it's missing (needs internet only then)."),
-        make("Offline installer (x64)", `Markpion-${version}-windows-x64-offline-setup.exe`, "Includes the WebView2 runtime; no internet needed. About 210 MB."),
+        make("Offline installer (x64)", `Markpion-${version}-windows-x64-offline-setup.exe`, "Includes the WebView2 runtime; no internet needed. A large download (about 300 MB)."),
         ...(noAdmin
           ? [
               make("No-admin installer (x64)", `Markpion-${version}-windows-x64-user-setup.exe`, "Installs for your Windows account only and never asks for an administrator, also when it updates."),

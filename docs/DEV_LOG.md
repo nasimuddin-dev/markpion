@@ -967,3 +967,5 @@ The user reported that some machines have no administrator permission to install
 **Other options looked at, not built:** a hosted web version (needs a new backend; belongs with the cloud work), a fixed-version WebView2 inside the portable copy (about 180 MB more, for PCs without WebView2), winget and Scoop packages (the portable .zip makes a Scoop manifest possible; both need the user's go-ahead to submit), and code signing (the real fix for SmartScreen and application control; needs certificates).
 
 **Next up:** the user's answers on the plugin design and on more document design tools; KaTeX 0.19 when its dependants allow it; then remind the user about the cloud integration.
+
+**After the 0.30.0 release (2026-11-24):** CI's dependency audit failed on two Rust advisories published that day (`cookie` 0.18.2, `url` 2.5.8). Both were updated (`cookie` 0.18.3, `url` 2.5.9) and the notices regenerated; the fix is on `main` and ships with the next version. The macOS Intel build of the release workflow was cancelled after 15 minutes without a runner and was started again.

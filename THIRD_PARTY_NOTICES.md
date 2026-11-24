@@ -580,7 +580,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 | chrono | 0.4.45 | MIT OR Apache-2.0 |
 | combine | 4.6.8 | MIT |
 | concurrent-queue | 2.5.0 | Apache-2.0 OR MIT |
-| cookie | 0.18.2 | MIT OR Apache-2.0 |
+| cookie | 0.18.3 | MIT OR Apache-2.0 |
 | core-foundation | 0.9.4 | MIT OR Apache-2.0 |
 | core-foundation | 0.10.1 | MIT OR Apache-2.0 |
 | core-foundation-sys | 0.8.7 | MIT OR Apache-2.0 |
@@ -639,7 +639,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 | foreign-types | 0.5.0 | MIT/Apache-2.0 |
 | foreign-types-macros | 0.2.4 | MIT/Apache-2.0 |
 | foreign-types-shared | 0.3.1 | MIT/Apache-2.0 |
-| form_urlencoded | 1.2.2 | MIT OR Apache-2.0 |
+| form_urlencoded | 1.2.3 | MIT OR Apache-2.0 |
 | fsevent-sys | 4.1.0 | MIT |
 | futures-channel | 0.3.34 | MIT OR Apache-2.0 |
 | futures-core | 0.3.34 | MIT OR Apache-2.0 |
@@ -940,7 +940,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 | unicode-ident | 1.0.26 | (MIT OR Apache-2.0) AND Unicode-3.0 |
 | unicode-segmentation | 1.13.3 | MIT OR Apache-2.0 |
 | untrusted | 0.9.0 | ISC |
-| url | 2.5.8 | MIT OR Apache-2.0 |
+| url | 2.5.9 | MIT OR Apache-2.0 |
 | urlencoding | 2.1.3 | MIT |
 | urlpattern | 0.3.0 | MIT |
 | utf8_iter | 1.0.4 | Apache-2.0 OR MIT |
@@ -1109,7 +1109,7 @@ SOFTWARE.
 
 ### Text 3
 
-Used by: @chevrotain/cst-dts-gen 13.2.0, @chevrotain/gast 13.2.0, @chevrotain/regexp-to-ast 13.2.0, @chevrotain/types 13.2.0, @chevrotain/utils 13.2.0, chevrotain 13.2.0, dompurify 3.4.18, mathjax-full 3.2.1, async-channel 2.5.0, async-executor 1.14.0, async-io 2.6.0, async-lock 3.4.2, async-process 2.5.0, async-recursion 1.1.1, async-signal 0.2.14, async-task 4.7.1, atomic-waker 1.1.2, base64 0.21.7, base64 0.22.1, base64 0.23.1, bit-set 0.8.0, bit-vec 0.8.0, bitflags 1.3.2, bitflags 2.13.2, block-buffer 0.10.4, blocking 1.7.0, bs58 0.5.1, bumpalo 3.20.3, bytemuck 1.25.2, camino 1.2.6, cfg-if 1.0.5, concurrent-queue 2.5.0, core-foundation 0.9.4, core-foundation 0.10.1, core-foundation-sys 0.8.7, core-graphics 0.25.0, core-graphics-types 0.2.0, cpufeatures 0.2.17, crossbeam-channel 0.5.17, crossbeam-utils 0.8.23, crypto-common 0.1.7, defmt 1.1.1, defmt-macros 1.1.1, digest 0.10.7, displaydoc 0.2.7, embed_plist 1.2.2, equivalent 1.0.2, errno 0.3.14, event-listener 5.4.2, event-listener-strategy 0.5.4, fastrand 2.5.0, filetime 0.2.29, flate2 1.1.10, fnv 1.0.7, form_urlencoded 1.2.2, futures-lite 2.6.1, glob 0.3.4, hashbrown 0.12.3, hashbrown 0.17.1, heck 0.4.1, heck 0.5.0, hermit-abi 0.5.3, html5ever 0.38.0, httparse 1.10.1, hyper-rustls 0.27.10, idna 1.1.0, idna_adapter 1.2.2, indexmap 1.9.3, indexmap 2.14.2, jni 0.21.1, js-sys 0.3.105, keyboard-types 0.7.0, libappindicator 0.9.0, linux-raw-sys 0.12.1, lock_api 0.4.14, log 0.4.34, markup5ever 0.38.0, mime 0.3.17, muda 0.19.3, num-traits 0.2.19, once_cell 1.21.4, openssl-probe 0.2.1, ordered-stream 0.2.0, parking 2.2.1, parking_lot 0.12.5, parking_lot_core 0.9.12, percent-encoding 2.3.2, piper 0.2.5, png 0.17.16, png 0.18.1, polling 3.11.0, regex 1.13.1, regex-automata 0.4.18, regex-syntax 0.8.11, rustix 1.1.5, rustls 0.23.46, rustls-native-certs 0.8.4, rustls-platform-verifier 0.7.1, scopeguard 1.2.0, security-framework 2.11.1, security-framework 3.7.0, security-framework-sys 2.17.0, serde_with 3.23.0, serde_with_macros 3.23.0, serialize-to-javascript 0.1.2, serialize-to-javascript-impl 0.1.2, servo_arc 0.4.3, sha2 0.10.9, signal-hook-registry 1.4.8, simd_cesu8 1.2.0, smallvec 1.16.1, socket2 0.6.5, stable_deref_trait 1.2.1, string_cache 0.9.0, syn 1.0.109, system-configuration 0.7.0, system-configuration-sys 0.6.0, tao-macros 0.1.4, tar 0.4.46, tempfile 3.27.0, tendril 0.5.1, tinyvec 1.13.3, toml_datetime 0.6.3, tray-icon 0.24.2, unicode-segmentation 1.13.3, url 2.5.8, utf8_iter 1.0.4, uuid 1.26.1, wasi 0.11.1+wasi-snapshot-preview1, wasip2 1.0.4+wasi-0.2.12, wasm-bindgen 0.2.128, wasm-bindgen-futures 0.4.78, wasm-bindgen-macro 0.2.128, wasm-bindgen-macro-support 0.2.128, wasm-bindgen-shared 0.2.128, web_atoms 0.2.6, web-sys 0.3.105, window-vibrancy 0.6.0, wit-bindgen 0.57.1, wry 0.55.1, xattr 1.6.1, zeroize 1.9.0
+Used by: @chevrotain/cst-dts-gen 13.2.0, @chevrotain/gast 13.2.0, @chevrotain/regexp-to-ast 13.2.0, @chevrotain/types 13.2.0, @chevrotain/utils 13.2.0, chevrotain 13.2.0, dompurify 3.4.18, mathjax-full 3.2.1, async-channel 2.5.0, async-executor 1.14.0, async-io 2.6.0, async-lock 3.4.2, async-process 2.5.0, async-recursion 1.1.1, async-signal 0.2.14, async-task 4.7.1, atomic-waker 1.1.2, base64 0.21.7, base64 0.22.1, base64 0.23.1, bit-set 0.8.0, bit-vec 0.8.0, bitflags 1.3.2, bitflags 2.13.2, block-buffer 0.10.4, blocking 1.7.0, bs58 0.5.1, bumpalo 3.20.3, bytemuck 1.25.2, camino 1.2.6, cfg-if 1.0.5, concurrent-queue 2.5.0, core-foundation 0.9.4, core-foundation 0.10.1, core-foundation-sys 0.8.7, core-graphics 0.25.0, core-graphics-types 0.2.0, cpufeatures 0.2.17, crossbeam-channel 0.5.17, crossbeam-utils 0.8.23, crypto-common 0.1.7, defmt 1.1.1, defmt-macros 1.1.1, digest 0.10.7, displaydoc 0.2.7, embed_plist 1.2.2, equivalent 1.0.2, errno 0.3.14, event-listener 5.4.2, event-listener-strategy 0.5.4, fastrand 2.5.0, filetime 0.2.29, flate2 1.1.10, fnv 1.0.7, form_urlencoded 1.2.3, futures-lite 2.6.1, glob 0.3.4, hashbrown 0.12.3, hashbrown 0.17.1, heck 0.4.1, heck 0.5.0, hermit-abi 0.5.3, html5ever 0.38.0, httparse 1.10.1, hyper-rustls 0.27.10, idna 1.1.0, idna_adapter 1.2.2, indexmap 1.9.3, indexmap 2.14.2, jni 0.21.1, js-sys 0.3.105, keyboard-types 0.7.0, libappindicator 0.9.0, linux-raw-sys 0.12.1, lock_api 0.4.14, log 0.4.34, markup5ever 0.38.0, mime 0.3.17, muda 0.19.3, num-traits 0.2.19, once_cell 1.21.4, openssl-probe 0.2.1, ordered-stream 0.2.0, parking 2.2.1, parking_lot 0.12.5, parking_lot_core 0.9.12, percent-encoding 2.3.2, piper 0.2.5, png 0.17.16, png 0.18.1, polling 3.11.0, regex 1.13.1, regex-automata 0.4.18, regex-syntax 0.8.11, rustix 1.1.5, rustls 0.23.46, rustls-native-certs 0.8.4, rustls-platform-verifier 0.7.1, scopeguard 1.2.0, security-framework 2.11.1, security-framework 3.7.0, security-framework-sys 2.17.0, serde_with 3.23.0, serde_with_macros 3.23.0, serialize-to-javascript 0.1.2, serialize-to-javascript-impl 0.1.2, servo_arc 0.4.3, sha2 0.10.9, signal-hook-registry 1.4.8, simd_cesu8 1.2.0, smallvec 1.16.1, socket2 0.6.5, stable_deref_trait 1.2.1, string_cache 0.9.0, syn 1.0.109, system-configuration 0.7.0, system-configuration-sys 0.6.0, tao-macros 0.1.4, tar 0.4.46, tempfile 3.27.0, tendril 0.5.1, tinyvec 1.13.3, toml_datetime 0.6.3, tray-icon 0.24.2, unicode-segmentation 1.13.3, url 2.5.9, utf8_iter 1.0.4, uuid 1.26.1, wasi 0.11.1+wasi-snapshot-preview1, wasip2 1.0.4+wasi-0.2.12, wasm-bindgen 0.2.128, wasm-bindgen-futures 0.4.78, wasm-bindgen-macro 0.2.128, wasm-bindgen-macro-support 0.2.128, wasm-bindgen-shared 0.2.128, web_atoms 0.2.6, web-sys 0.3.105, window-vibrancy 0.6.0, wit-bindgen 0.57.1, wry 0.55.1, xattr 1.6.1, zeroize 1.9.0
 
 ```text
 Apache License
@@ -3859,7 +3859,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### Text 62
 
-Used by: cookie 0.18.2
+Used by: cookie 0.18.3
 
 ```text
 Apache License
@@ -4068,7 +4068,7 @@ limitations under the License.
 
 ### Text 63
 
-Used by: cookie 0.18.2
+Used by: cookie 0.18.3
 
 ```text
 Copyright (c) 2017 Sergio Benitez
@@ -8159,7 +8159,7 @@ SOFTWARE.
 
 ### Text 140
 
-Used by: form_urlencoded 1.2.2
+Used by: form_urlencoded 1.2.3
 
 ```text
 Copyright (c) 2013-2016 The rust-url developers
@@ -9913,7 +9913,7 @@ ICU 1.8.1 to ICU 57.1 © 1995-2016 International Business Machines Corporation a
 
 ### Text 175
 
-Used by: idna 1.1.0, percent-encoding 2.3.2, url 2.5.8
+Used by: idna 1.1.0, percent-encoding 2.3.2, url 2.5.9
 
 ```text
 Copyright (c) 2013-2025 The rust-url developers

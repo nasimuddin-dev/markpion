@@ -93,6 +93,18 @@ Var MsLegacyRemoved
 !macroend
 
 !macro NSIS_HOOK_POSTINSTALL
+  ; The per-user installer (installMode currentUser, which never asks for
+  ; administrator rights) marks its install, so the app takes its updates from
+  ; the same installer (src-tauri/src/install.rs). The standard installer
+  ; removes the mark when it installs over one.
+  !if "${INSTALLMODE}" == "currentUser"
+    FileOpen $0 "$INSTDIR\per-user-install" w
+    FileWrite $0 "Installed by the Markpion per-user installer.$\r$\n"
+    FileClose $0
+  !else
+    Delete "$INSTDIR\per-user-install"
+  !endif
+
   ; Document type (ProgID) used by "Open with" and Default apps.
   WriteRegStr SHCTX "Software\Classes\${MS_PROGID}" "" "Markdown Document"
   WriteRegStr SHCTX "Software\Classes\${MS_PROGID}" "FriendlyTypeName" "Markdown Document"
@@ -136,6 +148,7 @@ Var MsLegacyRemoved
 !macroend
 
 !macro NSIS_HOOK_PREUNINSTALL
+  Delete "$INSTDIR\per-user-install"
   !insertmacro MS_UNREGISTER_EXT ".md"
   !insertmacro MS_UNREGISTER_EXT ".markdown"
   DeleteRegKey SHCTX "Software\Classes\${MS_PROGID}"

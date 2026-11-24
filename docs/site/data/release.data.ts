@@ -47,6 +47,8 @@ export default {
     // ARM64 installers are built by release.yml from 0.23.0 on.
     const [major, minor] = version.split(".").map(Number);
     const arm64 = major > 0 || minor >= 23;
+    // The per-user installer and the portable copy are built by release-installer.mjs from 0.30.0 on.
+    const noAdmin = major > 0 || minor >= 30;
     return {
       version,
       date,
@@ -54,6 +56,12 @@ export default {
       windows: [
         make("Standard installer (x64)", `Markpion-${version}-windows-x64-setup.exe`, "Recommended. Adds WebView2 automatically if it's missing (needs internet only then)."),
         make("Offline installer (x64)", `Markpion-${version}-windows-x64-offline-setup.exe`, "Includes the WebView2 runtime; no internet needed. About 210 MB."),
+        ...(noAdmin
+          ? [
+              make("No-admin installer (x64)", `Markpion-${version}-windows-x64-user-setup.exe`, "Installs for your Windows account only and never asks for an administrator, also when it updates."),
+              make("Portable .zip (x64)", `Markpion-${version}-windows-x64-portable.zip`, "Nothing to install: unpack it anywhere (a USB stick too) and start Markpion.exe. Its settings stay in its folder."),
+            ]
+          : []),
         ...(arm64 ? [make("ARM64 installer", `Markpion-${version}-windows-arm64-setup.exe`, "For Windows on ARM (Snapdragon). New versions are offered as a download, not installed in place.")] : []),
       ],
       macos: [

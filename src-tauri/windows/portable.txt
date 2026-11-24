@@ -1,0 +1,27 @@
+Markpion, portable copy
+=======================
+
+Start Markpion.exe. Nothing is installed and no administrator rights are
+needed.
+
+While this file (portable.txt) is next to Markpion.exe, Markpion keeps its
+settings, recent files, File History, recovery copies and logs in the "data"
+folder here, not in your Windows profile. Move or copy the whole folder (to a
+USB stick, another PC, a network drive) and everything comes along.
+
+Good to know
+- Markpion needs the Microsoft Edge WebView2 Runtime. It is part of Windows 11
+  and of up-to-date Windows 10. If Markpion says it is missing, install the
+  "Evergreen" runtime from https://developer.microsoft.com/microsoft-edge/webview2/
+  (it can be installed for your account without administrator rights).
+- Updates: Markpion tells you when a new version is out and opens the download
+  page. Unpack the new .zip over this folder; keep the "data" folder.
+- .md files are not linked to this copy. To open one, drag it onto the window,
+  use File > Open, or right-click the file > Open with > Choose another app.
+- An AI assistant key, if you add one, is stored in the Windows Credential
+  Manager of this account, not in the data folder.
+- To remove Markpion, delete this folder.
+- Delete this file and Markpion behaves like an installed copy: it keeps its
+  data in your Windows profile instead.
+
+https://github.com/nasimuddin-dev/markpion

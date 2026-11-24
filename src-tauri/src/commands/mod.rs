@@ -35,6 +35,8 @@ pub struct AppState {
     pub logger: Logger,
     pub config_dir: PathBuf,
     pub data_dir: PathBuf,
+    /// How this copy was put on the computer (installed, per-user, portable).
+    pub install: crate::install::InstallKind,
     /// Recent files/folders are owned by the backend (not the UI) so a path can
     /// only be re-opened without a dialog if the user opened it before (FR-044).
     pub recents: Mutex<Vec<RecentEntry>>,
@@ -160,6 +162,7 @@ pub struct AppInfo {
     os: String,
     arch: String,
     log_path: String,
+    install: crate::install::InstallKind,
 }
 
 #[tauri::command]
@@ -169,6 +172,7 @@ pub fn app_info(state: State<'_, AppState>) -> AppInfo {
         os: std::env::consts::OS.to_string(),
         arch: std::env::consts::ARCH.to_string(),
         log_path: state.logger.redact(&state.logger.path().to_string_lossy()),
+        install: state.install,
     }
 }
 

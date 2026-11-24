@@ -35,14 +35,28 @@ fn updater_error(e: impl std::fmt::Display) -> AppError {
     AppError::Io(format!("Update failed: {e}"))
 }
 
-async fn find_update(app: &AppHandle) -> AppResult<Option<tauri_plugin_updater::Update>> {
-    app.updater().map_err(updater_error)?.check().await.map_err(updater_error)
+/// A portable copy has nothing to install over: the app points to the download instead.
+fn refuse_portable(state: &AppState) -> AppResult<()> {
+    if state.install == crate::install::InstallKind::Portable {
+        return Err(AppError::NotFound("A portable copy doesn't update itself. Download the new version and replace this folder's files.".into()));
+    }
+    Ok(())
+}
+
+async fn find_update(app: &AppHandle, state: &AppState) -> AppResult<Option<tauri_plugin_updater::Update>> {
+    refuse_portable(state)?;
+    // The per-user install has its own installer in the manifest, which never asks for elevation.
+    let updater = match crate::install::updater_target(state.install, std::env::consts::OS, std::env::consts::ARCH) {
+        Some(target) => app.updater_builder().target(target).build(),
+        None => app.updater(),
+    };
+    updater.map_err(updater_error)?.check().await.map_err(updater_error)
 }
 
 /// Returns the newer version published on GitHub, if there is one.
 #[tauri::command]
 pub async fn check_app_update(app: AppHandle, state: State<'_, AppState>) -> AppResult<Option<UpdateInfo>> {
-    let update = state.track("update.check", find_update(&app).await)?;
+    let update = state.track("update.check", find_update(&app, &state).await)?;
     Ok(update.map(|u| UpdateInfo {
         version: u.version.clone(),
         current_version: u.current_version.clone(),
@@ -57,7 +71,7 @@ pub async fn check_app_update(app: AppHandle, state: State<'_, AppState>) -> App
 #[tauri::command]
 pub async fn install_app_update(app: AppHandle, state: State<'_, AppState>) -> AppResult<()> {
     let update = state
-        .track("update.check", find_update(&app).await)?
+        .track("update.check", find_update(&app, &state).await)?
         .ok_or_else(|| AppError::NotFound("No update is available.".into()))?;
     state.logger.log("info", "update.install", &format!("{} -> {}", update.current_version, update.version));
     let mut downloaded: u64 = 0;

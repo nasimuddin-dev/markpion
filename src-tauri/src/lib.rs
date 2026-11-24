@@ -6,6 +6,7 @@ mod fs_ops;
 mod git;
 mod git_write;
 mod history;
+mod install;
 mod menu;
 mod open_paths;
 mod scope;
@@ -48,6 +49,19 @@ fn test_data_dir() -> Option<std::path::PathBuf> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let test_data = test_data_dir();
+    // A portable copy keeps everything in a folder beside its executable (see `install`).
+    let exe_dir = std::env::current_exe().ok().and_then(|exe| exe.parent().map(std::path::Path::to_path_buf));
+    let mut install_kind = exe_dir.as_deref().map(install::detect).unwrap_or(install::InstallKind::Standard);
+    let portable_data = match (&exe_dir, install_kind) {
+        (Some(dir), install::InstallKind::Portable) => install::portable_data_dir(dir),
+        _ => None,
+    };
+    if install_kind == install::InstallKind::Portable && portable_data.is_none() {
+        install_kind = install::InstallKind::Standard;
+    }
+    // Where settings, history, logs and the web view's storage go when it isn't the user's profile.
+    // (A portable copy stays portable under the native tests, which run one.)
+    let own_data = portable_data.or(test_data);
     let builder = tauri::Builder::default()
         // Must be registered first: a second launch forwards its arguments here
         // and exits, so files double-clicked in the OS open in the running app.
@@ -61,21 +75,21 @@ pub fn run() {
         }))
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init());
-    // Restores window size/position between launches (FR-003); not in tests,
-    // where it would save into the real profile.
-    let builder = if test_data.is_none() { builder.plugin(tauri_plugin_window_state::Builder::default().build()) } else { builder };
+    // Restores window size/position between launches (FR-003); not in tests or
+    // a portable copy, where it would save into the user's profile.
+    let builder = if own_data.is_none() { builder.plugin(tauri_plugin_window_state::Builder::default().build()) } else { builder };
     builder
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(move |app| {
             let paths = app.path();
-            let (config_dir, data_dir) = match &test_data {
+            let (config_dir, data_dir) = match &own_data {
                 Some(dir) => (dir.join("config"), dir.join("data")),
                 None => (paths.app_config_dir()?, paths.app_data_dir()?),
             };
             // Keep settings, recent files and history from Markdown Studio (the old name).
             storage::migrate_legacy_dir(&config_dir);
             storage::migrate_legacy_dir(&data_dir);
-            let log_dir = match &test_data {
+            let log_dir = match &own_data {
                 Some(dir) => dir.join("logs"),
                 None => paths.app_log_dir()?,
             };
@@ -83,13 +97,14 @@ pub fn run() {
             logger.log(
                 "info",
                 "app.start",
-                &format!("{} {}", std::env::consts::OS, std::env::consts::ARCH),
+                &format!("{} {}{}", std::env::consts::OS, std::env::consts::ARCH, if install_kind == install::InstallKind::Portable { " portable" } else { "" }),
             );
             let state = AppState {
                 scope: scope::Scope::default(),
                 logger,
                 config_dir,
                 data_dir,
+                install: install_kind,
                 recents: Mutex::new(Vec::new()),
                 pending_open: Mutex::new(open_paths::OpenPaths::default()),
                 ui_ready: Default::default(),
@@ -104,7 +119,7 @@ pub fn run() {
             // profile), a dark-theme user sees a dark window, not a white one.
             let theme = storage::read_json(&state.config_dir.join("settings.json"));
             let mut window = tauri::WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::default());
-            if let Some(dir) = &test_data {
+            if let Some(dir) = &own_data {
                 window = window.data_directory(dir.join("webview"));
             }
             let window = window

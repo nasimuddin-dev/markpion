@@ -1,7 +1,7 @@
 import type { AiRequest, Backend, NativeMenu, WriteRequest } from "./backend";
 import { AppError } from "./errors";
 import { basename, dirname, isMarkdownPath, join } from "./paths";
-import type { AppUpdate, DirEntry, GitBranches, GitChange, GitStatus, OpenPaths, PublishResult, RecentEntry, RecoverySnapshot, SearchOptions, SearchResult } from "../types";
+import type { AppInfo, AppUpdate, DirEntry, GitBranches, GitChange, GitStatus, OpenPaths, PublishResult, RecentEntry, RecoverySnapshot, SearchOptions, SearchResult } from "../types";
 import { buildSearchRegex, searchText } from "./search";
 import { pathFilter, relativeTo } from "./pathFilter";
 import { DEMO_FILES } from "./demoContent";
@@ -187,8 +187,8 @@ export class MemoryBackend implements Backend {
 
   // ------------------------------------------------------------ Backend
 
-  async appInfo() {
-    return { version: "0.29.1", os: "browser", arch: "web", logPath: "(in memory)" };
+  async appInfo(): Promise<AppInfo> {
+    return { version: "0.29.1", os: "browser", arch: "web", logPath: "(in memory)", install: "standard" };
   }
 
   async pickOpenFile() {

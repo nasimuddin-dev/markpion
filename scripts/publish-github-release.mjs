@@ -14,6 +14,8 @@ const tag = `v${version}`;
 const files = [
   join("downloads", `Markpion-${version}-windows-x64-setup.exe`),
   join("release-assets", `Markpion-${version}-windows-x64-offline-setup.exe`),
+  join("release-assets", `Markpion-${version}-windows-x64-user-setup.exe`),
+  join("release-assets", `Markpion-${version}-windows-x64-portable.zip`),
   join("downloads", "SHA256SUMS.txt"),
   // Update manifest read by the in-app updater (releases/latest/download/latest.json).
   join("release-assets", "latest.json"),
@@ -32,9 +34,11 @@ A fast, local-first Markdown editor for Windows. Nothing else needs to be instal
 | --- | --- |
 | \`Markpion-${version}-windows-x64-setup.exe\` | **Recommended.** Small download. WebView2 is already part of Windows 11 and updated Windows 10; if it's missing, the installer adds it automatically (needs internet). |
 | \`Markpion-${version}-windows-x64-offline-setup.exe\` | The PC has **no internet access** or is locked down. It includes the Microsoft Edge WebView2 runtime. |
+| \`Markpion-${version}-windows-x64-user-setup.exe\` | You have **no administrator rights**. It installs for your Windows account only and never asks for an administrator, also when it updates. |
+| \`Markpion-${version}-windows-x64-portable.zip\` | You don't want to **install** anything. Unpack it anywhere (a USB stick too) and start Markpion.exe; its settings stay in its folder. |
 | \`SHA256SUMS.txt\` | Verify a download: \`Get-FileHash <file> -Algorithm SHA256\` |
 
-The installer isn't code-signed yet: if SmartScreen warns, choose **More info → Run anyway**.
+The installers aren't code-signed yet: if SmartScreen warns, choose **More info → Run anyway**.
 See the [installation guide](https://github.com/${gh("repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner").trim()}/blob/main/docs/INSTALL.md).
 `;
 const notesFile = join(tmpdir(), `markpion-${tag}-notes.md`);

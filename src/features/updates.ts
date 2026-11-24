@@ -41,11 +41,15 @@ interface Found {
   notes: string;
   /** Desktop: installable in place. Browser demo: only a download page. */
   url: string | null;
+  /** A portable copy: the new version is a folder to unpack over this one. */
+  portable?: boolean;
 }
 
 async function findUpdate(): Promise<Found | null> {
   const b = backend();
-  if (b.capabilities.selfUpdate) {
+  // A portable copy has nothing to install over: it hears about new versions and gets the download page.
+  const portable = (await b.appInfo().catch(() => null))?.install === "portable";
+  if (b.capabilities.selfUpdate && !portable) {
     try {
       const u = await b.checkAppUpdate();
       return u ? { version: u.version, current: u.currentVersion, notes: u.notes ?? "", url: null } : null;
@@ -58,7 +62,7 @@ async function findUpdate(): Promise<Found | null> {
   }
   const current = (await b.appInfo()).version;
   const latest = await fetchLatestRelease();
-  return compareVersions(latest.version, current) > 0 ? { version: latest.version, current, notes: latest.notes, url: latest.url } : null;
+  return compareVersions(latest.version, current) > 0 ? { version: latest.version, current, notes: latest.notes, url: latest.url, portable } : null;
 }
 
 const MB = 1024 * 1024;
@@ -138,7 +142,9 @@ export async function checkForUpdates({ manual }: { manual: boolean }): Promise<
       (notes ? notes + "\n\n" : "") +
       (installable
         ? "Update now to download and install it. The download is verified, then it replaces your current version; your settings and files are kept, and Markpion restarts."
-        : "Download the installer and run it; your settings and files are kept."),
+        : found.portable
+          ? "Download the new portable .zip and unpack it over this folder (keep the data folder: it holds your settings and history)."
+          : "Download the installer and run it; your settings and files are kept."),
     buttons: [
       { id: "skip", label: "Skip This Version" },
       { id: "later", label: "Later" },

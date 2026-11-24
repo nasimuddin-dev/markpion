@@ -242,6 +242,8 @@ export function AboutDialog() {
           <p><strong>Markpion</strong> {info ? `version ${info.version}` : ""}</p>
           <p className="muted">A fast, local-first Markdown editor. Your documents stay on your computer.</p>
           {info && <p className="muted">Platform: {info.os} ({info.arch})</p>}
+          {info?.install === "portable" && <p className="muted">Portable copy: settings, history and logs are kept in the <code>data</code> folder next to the program.</p>}
+          {info?.install === "perUser" && <p className="muted">Installed for this Windows account only (no administrator rights needed, also for updates).</p>}
           {info && <p className="muted">Logs: {info.logPath}</p>}
         </div>
       </div>

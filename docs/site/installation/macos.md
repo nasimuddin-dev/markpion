@@ -5,6 +5,10 @@ description: Install Markpion on macOS 10.15 or later, on Apple Silicon or Intel
 
 # Install Markpion on macOS
 
+::: tip No administrator rights?
+You don't need them: drag **Markpion** to the Applications folder in your home folder (`~/Applications`; create it if it isn't there) or to any folder of your own, and start it from there.
+:::
+
 ## Requirements
 
 - macOS 10.15 (Catalina) or later.

@@ -55,6 +55,10 @@ Yes, LaTeX **math**: `$…$` inline and `$$…$$` for display, rendered with KaT
 
 Yes: **Export as PDF**, **Export as Word (.docx)**, **Export as HTML** and **Print / Save as PDF**, for one document or a whole folder. See [Import & export](/guide/import-export#export), including which features each format keeps.
 
+## Can I use it without administrator rights, or without installing it?
+
+Yes. On Windows, the **no-admin installer** installs for your account only and never asks for an administrator, and the **portable .zip** needs no installation at all: unpack it anywhere, even on a USB stick, and its settings stay in its folder. See [Without administrator rights, or without installing](/installation/windows#without-administrator-rights-or-without-installing). On macOS you can keep Markpion in the Applications folder of your own account or run it from any folder, and on Linux the AppImage runs without installation or root. On a PC where only approved programs may run, your IT department has to allow it.
+
 ## Does it update itself?
 
 On Windows, yes: it offers new versions at startup and installs them after checking their signature. On macOS and Linux, it tells you about new versions and opens the download page. See [Updates](/getting-started/installation#updating).

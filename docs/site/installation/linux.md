@@ -5,6 +5,10 @@ description: Install Markpion on Linux with the AppImage, the .deb package (Ubun
 
 # Install Markpion on Linux
 
+::: tip No root access, or nothing to install?
+Use the **AppImage**: it's one file that runs as it is, from any folder you can write to, without installation or root.
+:::
+
 ## Requirements
 
 - A 64-bit (x86_64) distribution from 2022 or later, such as Ubuntu 22.04+, Debian 12+, Fedora 36+ or openSUSE Leap 15.5+. From version 0.23.0 there are also ARM64 packages (`linux-aarch64.AppImage`, `linux-arm64.deb`, `linux-aarch64.rpm`); they haven't been tested on ARM hardware yet.

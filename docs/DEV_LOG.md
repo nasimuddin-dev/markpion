@@ -945,3 +945,25 @@ The user asked to fix the two items left open after the review: typing at 900 KB
 **Unverified:** an in-app update performed by a build without the updater's `zip` feature. The code path for a plain installer doesn't use it and the app builds and passes its tests, but the first real check is updating from 0.29.1 to the next version. One native test failed once in a regression run (a click on Stage was blocked by an open menu item) and passed in three later runs; the cause wasn't found.
 
 **Next up:** more document design tools if the user wants them, the plugin system (design awaiting the user's answer), KaTeX 0.19 when its dependants allow it, then remind the user about the cloud integration.
+
+## 2026-11-24: install without administrator rights, portable copy, 0.30.0
+
+The user reported that some machines have no administrator permission to install, and that some users want to use Markpion without installing it, and asked for research and a solution.
+
+**Finding:** the standard installer is built with `installMode: both`. Its manifest asks for `highestAvailable`, so an account in the Administrators group gets the approval prompt even for "Only for me" (Tauri's documentation says the mode requires administrator privileges). A standard account isn't prompted, but can't always tell. An installer built with `installMode: currentUser` is `asInvoker` and never asks.
+
+| Item | Commit |
+| --- | --- |
+| Per-user installer (`tauri.user.conf.json`, `…-user-setup.exe`), a `per-user-install` marker written by the installer hook, and its own update key `windows-x86_64-user` so updates never ask for elevation either; the standard installer and its update path are unchanged, so existing installations update as before | (this release's commit) |
+| Portable copy (`…-portable.zip`: the program, `portable.txt`, the notices): data in `data/` beside the executable, no window-state plugin, updates open the download page; About says which kind of copy is running | (this release's commit) |
+| `release-installer.mjs` builds the standard installer, the portable .zip, the per-user installer and the offline installer from one compilation; `latest.json` carries the per-user entry; README, INSTALL.md, the website's downloads and release notes list the new files | (this release's commit) |
+
+**Version:** 0.30.0. **Tests:** Vitest 717 (129 files), Playwright 147, Rust 66 (+1 ignored), native 9 (one runs a portable copy and checks its data folder), visual 32 screens (local).
+
+**Verified:** the built per-user installer's manifest is `asInvoker` (the standard one is `highestAvailable`); a portable copy of the debug build keeps its logs, settings and web view storage in its own folder (native test).
+
+**Unverified:** running the per-user installer and updating such an installation (no install is done on this machine without the user asking); the portable release build on a PC without WebView2; both on a real standard (non-administrator) account. ARM64 has only the standard installer.
+
+**Other options looked at, not built:** a hosted web version (needs a new backend; belongs with the cloud work), a fixed-version WebView2 inside the portable copy (about 180 MB more, for PCs without WebView2), winget and Scoop packages (the portable .zip makes a Scoop manifest possible; both need the user's go-ahead to submit), and code signing (the real fix for SmartScreen and application control; needs certificates).
+
+**Next up:** the user's answers on the plugin design and on more document design tools; KaTeX 0.19 when its dependants allow it; then remind the user about the cloud integration.

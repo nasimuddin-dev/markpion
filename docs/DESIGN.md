@@ -333,6 +333,8 @@ flowchart LR
 
 The updater's private signing key never enters the repository; it stays in `~/.tauri/` on the release machine. The updater plugin is built without its `zip` feature: Windows updates are plain signed installers, so the archive-unpacking code (and the `zip`, `tar` and `flate2` crates) stays out of the app. In-place updates on macOS and Linux, which use `.tar.gz` archives, would need that feature back.
 
+The same program is shipped three ways on Windows, told apart at start-up by a marker file next to the executable (`src-tauri/src/install.rs`): the standard installer (no marker), the per-user installer (`per-user-install`; its updates use the manifest key `windows-x86_64-user`), and the portable copy (`portable.txt`; data in `data/` beside the executable, no in-place update). `release-installer.mjs` builds all three from one compilation, plus the offline installer.
+
 ## 13. Backend adapters and the road to a cloud version
 
 The UI depends on one interface, `Backend` (`src/services/backend.ts`), split by domain. Each domain can be implemented and replaced on its own, and `capabilities` tells the UI what the current host can do, so features adapt instead of checking "am I the desktop app?".

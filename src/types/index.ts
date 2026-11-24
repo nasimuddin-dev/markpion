@@ -80,6 +80,12 @@ export interface AppInfo {
   os: string;
   arch: string;
   logPath: string;
+  /**
+   * How this copy was put on the computer: by the standard installer, by the
+   * per-user installer (never asks for administrator rights), or not at all
+   * (the portable copy, which keeps its data beside the program).
+   */
+  install: "standard" | "perUser" | "portable";
 }
 
 export type ErrorKind =

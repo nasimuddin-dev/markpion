@@ -6,6 +6,9 @@
 //   * with --offline, an offline installer that bundles the WebView2 runtime
 //     (~210 MB, too large for a git repository) goes into release-assets/ for
 //     upload to a GitHub Release (npm run release:github).
+//   * a per-user installer (never asks for administrator rights) and a portable
+//     .zip (nothing to install; data stays in its folder) also go into
+//     release-assets/.
 // It then updates the README download section and docs/INSTALL.md links.
 //
 // In-app updates: the standard installer is signed with the updater key
@@ -26,6 +29,7 @@ import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
+import JSZip from "jszip";
 
 const args = process.argv.slice(2);
 const skipBuild = args.includes("--skip-build");
@@ -99,29 +103,70 @@ if (!skipBuild || !existsSync(target)) {
   copyFileSync(bundlePath, target);
 }
 
-// ---------------------------------------------------------------- updater manifest
-// Written before the offline build, which replaces the bundle and its signature.
 const assetsDir = "release-assets";
+mkdirSync(assetsDir, { recursive: true });
 const manifestPath = join(assetsDir, "latest.json");
-if (!skipBuild || !existsSync(manifestPath)) {
+const rebuildManifest = !skipBuild || !existsSync(manifestPath);
+/** The bundle's updater signature; each build replaces the bundle, so it's read right after its build. */
+const signatureOfBundle = () => {
   const sigPath = `${bundlePath}.sig`;
   if (!existsSync(sigPath)) {
     console.error(`Updater signature not found: ${sigPath} (is bundle.createUpdaterArtifacts enabled?)`);
     process.exit(1);
   }
-  const platform = {
-    signature: readFileSync(sigPath, "utf8").trim(),
-    url: `https://github.com/${repo}/releases/download/v${version}/${fileName}`,
-  };
-  mkdirSync(assetsDir, { recursive: true });
+  return readFileSync(sigPath, "utf8").trim();
+};
+const releaseAsset = (name) => `https://github.com/${repo}/releases/download/v${version}/${name}`;
+const standardSignature = rebuildManifest ? signatureOfBundle() : null;
+
+// ---------------------------------------------------------------- portable copy
+// The program itself with a marker file: no installer, nothing written outside its folder (src-tauri/src/install.rs).
+const portableName = `Markpion-${version}-windows-x64-portable.zip`;
+const portableTarget = join(assetsDir, portableName);
+if (!skipBuild || !existsSync(portableTarget)) {
+  const exe = join("src-tauri", "target", "release", "markpion.exe");
+  if (!existsSync(exe)) {
+    console.error(`Program not found: ${exe}`);
+    process.exit(1);
+  }
+  for (const f of readdirSync(assetsDir)) if (f.endsWith("-portable.zip")) rmSync(join(assetsDir, f));
+  const zip = new JSZip();
+  const folder = zip.folder("Markpion");
+  folder.file("Markpion.exe", readFileSync(exe));
+  folder.file("portable.txt", readFileSync(join("src-tauri", "windows", "portable.txt")));
+  folder.file("THIRD_PARTY_NOTICES.md", readFileSync("THIRD_PARTY_NOTICES.md"));
+  writeFileSync(portableTarget, await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE", compressionOptions: { level: 9 } }));
+  console.log(`Portable copy: ${portableTarget}`);
+}
+
+// ---------------------------------------------------------------- per-user installer
+// installMode currentUser: the installer runs as the user and never asks for elevation.
+const userName = `Markpion-${version}-windows-x64-user-setup.exe`;
+const userTarget = join(assetsDir, userName);
+let userSignature = null;
+if (!skipBuild) {
+  console.log(`Building Markpion ${version} per-user installer (no administrator rights)…`);
+  execSync("npx tauri build --bundles nsis --config src-tauri/tauri.user.conf.json", { stdio: "inherit" });
+  for (const f of readdirSync(assetsDir)) if (f.endsWith("-user-setup.exe")) rmSync(join(assetsDir, f));
+  copyFileSync(bundlePath, userTarget);
+  userSignature = signatureOfBundle();
+}
+
+// ---------------------------------------------------------------- updater manifest
+if (rebuildManifest) {
+  const platform = { signature: standardSignature, url: releaseAsset(fileName) };
+  // An install made by the per-user installer asks for this key (install::updater_target).
+  const userPlatform = userSignature ? { signature: userSignature, url: releaseAsset(userName) } : null;
   const manifest = {
     version,
     notes: `Markpion ${version}. See https://github.com/${repo}/releases/tag/v${version} for what's new.`,
     pub_date: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
-    platforms: { "windows-x86_64-nsis": platform, "windows-x86_64": platform },
+    platforms: { "windows-x86_64-nsis": platform, "windows-x86_64": platform, ...(userPlatform ? { "windows-x86_64-user": userPlatform } : {}) },
   };
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
 }
+const hasUser = existsSync(userTarget);
+const hasPortable = existsSync(portableTarget);
 
 // ---------------------------------------------------------------- offline installer
 const offlineName = `Markpion-${version}-windows-x64-offline-setup.exe`;
@@ -132,8 +177,7 @@ if (withOffline) {
     execSync("npx tauri build --bundles nsis --config src-tauri/tauri.offline.conf.json", { stdio: "inherit" });
   }
   if (!skipBuild || !existsSync(offlineTarget)) {
-    mkdirSync(assetsDir, { recursive: true });
-    for (const f of readdirSync(assetsDir)) if (f.endsWith(".exe")) rmSync(join(assetsDir, f));
+    for (const f of readdirSync(assetsDir)) if (f.endsWith("-offline-setup.exe")) rmSync(join(assetsDir, f));
     copyFileSync(bundlePath, offlineTarget);
   }
 }
@@ -148,6 +192,16 @@ if (hasOffline) {
   offlineSha = sha256Of(offlineTarget);
   sums += `${offlineSha}  ${offlineName}\n`;
 }
+let userSha = null;
+if (hasUser) {
+  userSha = sha256Of(userTarget);
+  sums += `${userSha}  ${userName}\n`;
+}
+let portableSha = null;
+if (hasPortable) {
+  portableSha = sha256Of(portableTarget);
+  sums += `${portableSha}  ${portableName}\n`;
+}
 writeFileSync(join(outDir, "SHA256SUMS.txt"), sums);
 if (hasOffline) copyFileSync(join(outDir, "SHA256SUMS.txt"), join(assetsDir, "SHA256SUMS.txt"));
 
@@ -160,7 +214,14 @@ const offlineUrl = `https://github.com/${repo}/releases/download/v${version}/${o
 const offlineRow = hasOffline
   ? `\n| **Offline**: [${offlineName}](${offlineUrl}) | Includes WebView2; no internet needed | ${mb(offlineTarget)} MB | \`${offlineSha}\` |`
   : "";
-const asset = (name) => `https://github.com/${repo}/releases/download/v${version}/${name}`;
+const asset = releaseAsset;
+const userRow = hasUser
+  ? `\n| **No administrator rights**: [${userName}](${asset(userName)}) | Installs for your Windows account only and never asks for an administrator, also when it updates | ${mb(userTarget)} MB | \`${userSha}\` |`
+  : "";
+const portableRow = hasPortable
+  ? `\n| **Portable**: [${portableName}](${asset(portableName)}) | Nothing to install: unpack the .zip anywhere (a USB stick too) and start Markpion.exe. Settings stay in its folder | ${mb(portableTarget)} MB | \`${portableSha}\` |`
+  : "";
+const extraWindows = `${hasUser ? ` · [No-admin installer](${asset(userName)})` : ""}${hasPortable ? ` · [Portable .zip](${asset(portableName)})` : ""}`;
 const mac = (arch) => `Markpion-${version}-macos-${arch}.dmg`;
 const linux = {
   appImage: `Markpion-${version}-linux-x86_64.AppImage`,
@@ -181,7 +242,7 @@ Markpion ${version} was released on ${date} and has a separate installer for eac
 
 | Operating system | Download |
 | --- | --- |
-| **Windows** 10 (1803+) and 11, x64 | [Standard installer](${link}) (${sizeMb} MB)${hasOffline ? ` · [Offline installer](${offlineUrl}) (${mb(offlineTarget)} MB)` : ""}${armWindows} |
+| **Windows** 10 (1803+) and 11, x64 | [Standard installer](${link}) (${sizeMb} MB)${hasOffline ? ` · [Offline installer](${offlineUrl}) (${mb(offlineTarget)} MB)` : ""}${extraWindows}${armWindows} |
 | **macOS** 10.15+ | [Apple Silicon (M1 and later)](${asset(mac("arm64"))}) · [Intel](${asset(mac("x64"))}) |
 | **Linux** x86_64 | [AppImage](${asset(linux.appImage)}) (any distribution) · [.deb](${asset(linux.deb)}) (Ubuntu, Debian, Mint) · [.rpm](${asset(linux.rpm)}) (Fedora, RHEL, openSUSE) |${armLinuxRow}
 
@@ -189,10 +250,10 @@ Markpion ${version} was released on ${date} and has a separate installer for eac
 
 | Installer | When to use it | Size | SHA-256 |
 | --- | --- | --- | --- |
-| **Standard**: [${fileName}](${link}) | Recommended. WebView2 is already part of Windows 11 and updated Windows 10; if it's missing, the installer adds it automatically (needs internet) | ${sizeMb} MB | \`${sha256}\` |${offlineRow}
+| **Standard**: [${fileName}](${link}) | Recommended. WebView2 is already part of Windows 11 and updated Windows 10; if it's missing, the installer adds it automatically (needs internet) | ${sizeMb} MB | \`${sha256}\` |${offlineRow}${userRow}${portableRow}
 
 1. **Download** an installer above.
-2. **Run** it and choose **Anyone who uses this computer**, which needs administrator approval, or **Only for me**, which doesn't. The installer isn't code-signed yet, so if Windows SmartScreen says *"Windows protected your PC"*, choose **More info → Run anyway**.
+2. **Run** it and choose **Anyone who uses this computer**, which needs administrator approval, or **Only for me**. If Windows asks for an administrator and you aren't one, use the **No administrator rights** installer or the **Portable** copy instead. The installers aren't code-signed yet, so if Windows SmartScreen says *"Windows protected your PC"*, choose **More info → Run anyway**.
 3. **Start** Markpion from the Start menu, or right-click any \`.md\` file and choose **Open with Markpion**.
 
 The app appears in **Settings → Apps → Installed apps** and in **Control Panel → Programs and Features**, where it can be uninstalled. Newer versions install over older ones, keep your settings, and are offered automatically when the app starts.
@@ -237,5 +298,7 @@ if (existsSync(installGuide)) {
 
 console.log(`\nStandard installer: ${target} (${sizeMb} MB)\n  SHA-256 ${sha256}`);
 if (hasOffline) console.log(`Offline installer:  ${offlineTarget} (${mb(offlineTarget)} MB)\n  SHA-256 ${offlineSha}`);
+if (hasUser) console.log(`Per-user installer: ${userTarget} (${mb(userTarget)} MB)\n  SHA-256 ${userSha}`);
+if (hasPortable) console.log(`Portable copy:      ${portableTarget} (${mb(portableTarget)} MB)\n  SHA-256 ${portableSha}`);
 console.log("README and docs/INSTALL.md updated.");
 if (hasOffline) console.log(`Next: commit + push, then  npm run release:github  to publish ${releaseUrl}`);

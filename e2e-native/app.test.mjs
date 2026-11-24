@@ -8,9 +8,9 @@
 import { afterEach, before, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { Key, Session } from "./webdriver.mjs";
 
 const APP = process.env.MARKPION_APP;
@@ -337,6 +337,32 @@ describe("the desktop app", () => {
       assert.equal(await paperAnswered, 0, "the Save dialog should be answered");
       assert.equal(savedPaper.ok, true, `LaTeX export failed: ${savedPaper.message}`);
       assert.equal(readFileSync(paper, "utf8"), "\\documentclass{article}\n\\begin{document}\nÉté\n\\end{document}\n");
+    } finally {
+      await s.quit();
+    }
+  });
+
+  it("runs as a portable copy: its data stays in the folder beside the program", async () => {
+    // The program alone in a folder with the marker file, as in the portable .zip.
+    const portable = join(dir, "portable copy");
+    mkdirSync(portable, { recursive: true });
+    const exe = join(portable, basename(APP));
+    copyFileSync(APP, exe);
+    writeFileSync(join(portable, "portable.txt"), "Portable copy\n");
+    const s = await Session.start(exe);
+    try {
+      await s.find("h1");
+      // Logs and the web view's storage are in data/, and the log says it's a portable copy.
+      await s.waitFor(() => existsSync(join(portable, "data", "logs")) && existsSync(join(portable, "data", "webview")), "the data folder");
+      const log = readdirSync(join(portable, "data", "logs")).map((f) => readFileSync(join(portable, "data", "logs", f), "utf8")).join("\n");
+      assert.match(log, /app\.start: \w+ \w+ portable/);
+      // A setting changed here is saved there.
+      await s.click(await s.find('button[aria-label="Toggle light or dark theme"]'));
+      await s.waitFor(() => existsSync(join(portable, "data", "config", "settings.json")), "settings.json in the data folder");
+      // About says so.
+      await s.click(await s.findByText('nav[aria-label="Application menu"] button', "Help"));
+      await s.click(await s.findByText('[role="menuitem"]', "About Markpion"));
+      await s.waitFor(() => s.exec("return /Portable copy/.test(document.querySelector('.about')?.textContent ?? '')"), "About to say it's a portable copy");
     } finally {
       await s.quit();
     }

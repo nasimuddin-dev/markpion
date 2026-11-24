@@ -102,6 +102,28 @@ describe("in-app update (desktop)", () => {
     expect(useUi.getState().progress).toBeNull();
   });
 
+  it("a portable copy doesn't install: it says how to replace its files and opens the download page", async () => {
+    const b = nativeBackend(async () => {});
+    const info = await b.appInfo();
+    b.appInfo = async () => ({ ...info, install: "portable" });
+    const checked = vi.spyOn(b, "checkAppUpdate");
+    vi.stubGlobal("fetch", release("v99.0.0"));
+    const open = vi.spyOn(b, "openExternal").mockResolvedValue();
+    let detail = "";
+    const stop = useUi.subscribe((s) => {
+      if (s.dialogs[0]) detail = s.dialogs[0].detail ?? "";
+    });
+    const answered = autoAnswer("install");
+    expect(await checkForUpdates({ manual: true })).toBe("available");
+    answered.stop();
+    stop();
+    // No in-place update is looked for or started.
+    expect(checked).not.toHaveBeenCalled();
+    expect(b.installAppUpdate).not.toHaveBeenCalled();
+    expect(detail).toMatch(/Download the new portable \.zip and unpack it over this folder \(keep the data folder/);
+    expect(open).toHaveBeenCalledWith("https://github.com/o/r/releases/tag/v99.0.0");
+  });
+
   it("saves open documents first and postpones if saving fails", async () => {
     const b = nativeBackend(async () => {});
     const { openPath } = await import("../src/features/documents");

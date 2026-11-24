@@ -57,7 +57,7 @@ Yes: **Export as PDF**, **Export as Word (.docx)**, **Export as HTML** and **Pri
 
 ## Can I use it without administrator rights, or without installing it?
 
-Yes. On Windows, the **no-admin installer** installs for your account only and never asks for an administrator, and the **portable .zip** needs no installation at all: unpack it anywhere, even on a USB stick, and its settings stay in its folder. See [Without administrator rights, or without installing](/installation/windows#without-administrator-rights-or-without-installing). On macOS you can keep Markpion in the Applications folder of your own account or run it from any folder, and on Linux the AppImage runs without installation or root. On a PC where only approved programs may run, your IT department has to allow it.
+Yes. On Windows, the **user installer** installs for your account only and never asks for an administrator, and the **portable .zip** needs no installation at all: unpack it anywhere, even on a USB stick, and its settings stay in its folder. See [Without administrator rights, or without installing](/installation/windows#without-administrator-rights-or-without-installing). On macOS you can keep Markpion in the Applications folder of your own account or run it from any folder, and on Linux the AppImage runs without installation or root. On a PC where only approved programs may run, your IT department has to allow it.
 
 ## Does it update itself?
 

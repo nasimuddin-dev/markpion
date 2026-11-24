@@ -58,7 +58,7 @@ export default {
         make("Offline installer (x64)", `Markpion-${version}-windows-x64-offline-setup.exe`, "Includes the WebView2 runtime; no internet needed. A large download (about 300 MB)."),
         ...(noAdmin
           ? [
-              make("No-admin installer (x64)", `Markpion-${version}-windows-x64-user-setup.exe`, "Installs for your Windows account only and never asks for an administrator, also when it updates."),
+              make("User installer (x64)", `Markpion-${version}-windows-x64-user-setup.exe`, "Installs for your Windows account only and never asks for an administrator, also when it updates."),
               make("Portable .zip (x64)", `Markpion-${version}-windows-x64-portable.zip`, "Nothing to install: unpack it anywhere (a USB stick too) and start Markpion.exe. Its settings stay in its folder."),
             ]
           : []),

@@ -12,7 +12,7 @@ Choose your system: [Windows](#windows) · [macOS](#macos) · [Linux](#linux). E
 
 - Windows 10 (version 1803 or later) or Windows 11, 64-bit (x64). From 0.23.0, an ARM64 installer (`Markpion-<version>-windows-arm64-setup.exe`) is also on the release page, built in CI and not yet tested on ARM hardware; it offers new versions as a download rather than installing them in place.
 - About 20 MB of free disk space
-- Administrator rights are only needed if you install for everyone on the computer. Without them, use the no-admin installer or the portable copy (see [Without administrator rights, or without installing](#without-administrator-rights-or-without-installing)).
+- Administrator rights are only needed if you install for everyone on the computer. Without them, use the user installer or the portable copy (see [Without administrator rights, or without installing](#without-administrator-rights-or-without-installing)).
 
 **Nothing else needs to be installed.** Markpion is self-contained: its runtime libraries are built in. The only system component it uses is Microsoft Edge **WebView2**, which draws the window. WebView2 is part of Windows 11 and is installed on up-to-date Windows 10 PCs by Windows Update. If it's missing, the installer adds it for you.
 
@@ -87,7 +87,7 @@ From version 0.30.0 the release page has two more downloads for Windows x64:
 | `Markpion-<version>-windows-x64-user-setup.exe` | Windows asks for an administrator and you aren't one | Installs for your Windows account only (`%LOCALAPPDATA%\Markpion`) and never asks for an administrator, also when Markpion updates itself |
 | `Markpion-<version>-windows-x64-portable.zip` | You can't or don't want to install anything | Unpack it anywhere (a USB stick too) and start `Markpion.exe`; nothing is installed or written to the registry |
 
-The standard installer can install for everyone, so Windows runs it with the highest rights the account has: an account in the Administrators group gets the approval prompt even for **Only for me**. The no-admin installer has no all-users choice, so Windows never asks.
+The standard installer can install for everyone, so Windows runs it with the highest rights the account has: an account in the Administrators group gets the approval prompt even for **Only for me**. The user installer has no all-users choice, so Windows never asks.
 
 **The portable copy** keeps settings, recent files, File History, recovery copies and logs in the `data` folder next to `Markpion.exe` for as long as `portable.txt` is there (if that folder can't be written to, it uses the Windows profile like an installed copy). It doesn't update itself: it tells you about a new version and opens the download page; unpack the new `.zip` over the folder and keep `data`. It has no Start menu shortcut and `.md` files aren't linked to it; the window's size and position aren't remembered; an AI assistant key is stored in the Windows Credential Manager, not in the folder. It needs WebView2 like the installed app. Delete the folder to remove it.
 

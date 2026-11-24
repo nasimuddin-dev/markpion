@@ -9,7 +9,7 @@ description: Install Markpion on Windows 10 or 11, with or without administrator
 
 - Windows 10 (version 1803 or later) or Windows 11, 64-bit (x64). From version 0.23.0 there is also an ARM64 installer for Windows on ARM; it hasn't been tested on ARM hardware yet, and new versions are offered as a download instead of being installed in place.
 - About 20 MB of free disk space.
-- Administrator rights only if you install for everyone on the PC. Without them, use the [no-admin installer or the portable copy](#without-administrator-rights-or-without-installing).
+- Administrator rights only if you install for everyone on the PC. Without them, use the [user installer or the portable copy](#without-administrator-rights-or-without-installing).
 - Microsoft Edge **WebView2**, which draws the window. It's part of Windows 11 and is kept up to date on Windows 10 by Windows Update. If it's missing, the standard installer adds it (this needs internet), and the offline installer includes it.
 
 ## Download
@@ -22,10 +22,10 @@ Use the **standard installer** unless the PC has no internet access, is locked d
 
 | You want to | Use | What happens |
 | --- | --- | --- |
-| Install, but Windows asks for an administrator you don't have | **No-admin installer** (`…-windows-x64-user-setup.exe`) | It installs for your Windows account only, in `%LOCALAPPDATA%\Markpion`, and never asks for an administrator, also when Markpion updates itself. You get the Start menu shortcut and **Open with Markpion** as usual. |
+| Install, but Windows asks for an administrator you don't have | **User installer** (`…-windows-x64-user-setup.exe`) | It installs for your Windows account only, in `%LOCALAPPDATA%\Markpion`, and never asks for an administrator, also when Markpion updates itself. You get the Start menu shortcut and **Open with Markpion** as usual. |
 | Not install anything (a work PC you may not change, a USB stick, trying it out) | **Portable .zip** (`…-windows-x64-portable.zip`) | Unpack it anywhere and start `Markpion.exe`. Nothing is installed or written to the registry. |
 
-Why the standard installer may ask: because it can install for everyone, Windows runs it with the highest rights your account has. An account in the Administrators group therefore gets the approval prompt even for **Only for me**. The no-admin installer has no all-users choice, so Windows never asks.
+Why the standard installer may ask: because it can install for everyone, Windows runs it with the highest rights your account has. An account in the Administrators group therefore gets the approval prompt even for **Only for me**. The user installer has no all-users choice, so Windows never asks.
 
 ### The portable copy
 
@@ -43,7 +43,7 @@ How it differs from an installed Markpion:
 - To remove it, delete the folder.
 
 ::: warning Company PCs with application control
-Some organizations allow only approved programs to run (AppLocker, Windows Defender Application Control, Smart App Control). There, neither the no-admin installer nor the portable copy will start, because Markpion isn't code-signed yet. Ask your IT department to allow or install it; the [silent install](#silent-install-it-administrators) below is for them.
+Some organizations allow only approved programs to run (AppLocker, Windows Defender Application Control, Smart App Control). There, neither the user installer nor the portable copy will start, because Markpion isn't code-signed yet. Ask your IT department to allow or install it; the [silent install](#silent-install-it-administrators) below is for them.
 :::
 
 ## Install
@@ -73,7 +73,7 @@ Open **Markpion** from the Start menu. Choose **New File**, **Open File** or **O
 
 Markpion updates itself (from version 0.8.0). At each start it asks GitHub whether a newer version exists and offers:
 
-- **Update Now:** saves your open documents, downloads the new installer, checks its digital signature against the key built into the app (refusing any file that doesn't match), installs it in place and restarts. For an all-users installation, Windows asks for administrator approval; an installation made with the no-admin installer updates without asking; the portable copy opens the download page instead.
+- **Update Now:** saves your open documents, downloads the new installer, checks its digital signature against the key built into the app (refusing any file that doesn't match), installs it in place and restarts. For an all-users installation, Windows asks for administrator approval; an installation made with the user installer updates without asking; the portable copy opens the download page instead.
 - **Later:** asks again at the next start.
 - **Skip This Version:** stops the automatic prompt for that version.
 

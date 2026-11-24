@@ -216,12 +216,12 @@ const offlineRow = hasOffline
   : "";
 const asset = releaseAsset;
 const userRow = hasUser
-  ? `\n| **No administrator rights**: [${userName}](${asset(userName)}) | Installs for your Windows account only and never asks for an administrator, also when it updates | ${mb(userTarget)} MB | \`${userSha}\` |`
+  ? `\n| **User installer**: [${userName}](${asset(userName)}) | Installs for your Windows account only and never asks for an administrator, also when it updates | ${mb(userTarget)} MB | \`${userSha}\` |`
   : "";
 const portableRow = hasPortable
   ? `\n| **Portable**: [${portableName}](${asset(portableName)}) | Nothing to install: unpack the .zip anywhere (a USB stick too) and start Markpion.exe. Settings stay in its folder | ${mb(portableTarget)} MB | \`${portableSha}\` |`
   : "";
-const extraWindows = `${hasUser ? ` · [No-admin installer](${asset(userName)})` : ""}${hasPortable ? ` · [Portable .zip](${asset(portableName)})` : ""}`;
+const extraWindows = `${hasUser ? ` · [User installer](${asset(userName)})` : ""}${hasPortable ? ` · [Portable .zip](${asset(portableName)})` : ""}`;
 const mac = (arch) => `Markpion-${version}-macos-${arch}.dmg`;
 const linux = {
   appImage: `Markpion-${version}-linux-x86_64.AppImage`,
@@ -253,7 +253,7 @@ Markpion ${version} was released on ${date} and has a separate installer for eac
 | **Standard**: [${fileName}](${link}) | Recommended. WebView2 is already part of Windows 11 and updated Windows 10; if it's missing, the installer adds it automatically (needs internet) | ${sizeMb} MB | \`${sha256}\` |${offlineRow}${userRow}${portableRow}
 
 1. **Download** an installer above.
-2. **Run** it and choose **Anyone who uses this computer**, which needs administrator approval, or **Only for me**. If Windows asks for an administrator and you aren't one, use the **No administrator rights** installer or the **Portable** copy instead. The installers aren't code-signed yet, so if Windows SmartScreen says *"Windows protected your PC"*, choose **More info → Run anyway**.
+2. **Run** it and choose **Anyone who uses this computer**, which needs administrator approval, or **Only for me**. If Windows asks for an administrator and you aren't one, use the **User installer** or the **Portable** copy instead. The installers aren't code-signed yet, so if Windows SmartScreen says *"Windows protected your PC"*, choose **More info → Run anyway**.
 3. **Start** Markpion from the Start menu, or right-click any \`.md\` file and choose **Open with Markpion**.
 
 The app appears in **Settings → Apps → Installed apps** and in **Control Panel → Programs and Features**, where it can be uninstalled. Newer versions install over older ones, keep your settings, and are offered automatically when the app starts.

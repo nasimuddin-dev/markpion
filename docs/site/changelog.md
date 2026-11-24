@@ -13,7 +13,7 @@ Released: 2026-11-24 · [Release files](https://github.com/nasimuddin-dev/markpi
 
 ### Added
 
-- **Install without administrator rights (Windows):** a new **no-admin installer** installs Markpion for your Windows account only and never asks for an administrator, also when it updates itself. Use it when the standard installer asks for an administrator you don't have.
+- **Install without administrator rights (Windows):** a new **user installer** installs Markpion for your Windows account only and never asks for an administrator, also when it updates itself. Use it when the standard installer asks for an administrator you don't have.
 - **Portable copy (Windows):** a `.zip` to unpack anywhere, even on a USB stick. Nothing is installed; settings, history and logs stay in a `data` folder next to the program. It tells you about new versions and opens the download page instead of installing them.
 
 See [Without administrator rights, or without installing](/installation/windows#without-administrator-rights-or-without-installing). Both are for 64-bit Intel/AMD PCs; on PCs where only approved programs may run, IT still has to allow Markpion.
